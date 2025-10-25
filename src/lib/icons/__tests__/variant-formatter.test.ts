@@ -127,7 +127,7 @@ describe('getVariantName', () => {
   });
 
   it('should format all weight values', () => {
-    const weights = [100, 200, 300, 400, 500, 600, 700];
+    const weights = [100, 200, 300, 400, 500, 600, 700] as const;
 
     weights.forEach((weight) => {
       const variantData = createVariantData({
@@ -152,9 +152,9 @@ describe('getVariantName', () => {
 
   it('should format grade names correctly', () => {
     const grades = [
-      { grade: -25, expected: 'Grade=Dark theme' },
-      { grade: 0, expected: 'Grade=Normal' },
-      { grade: 200, expected: 'Grade=Emphasis' },
+      { grade: -25 as const, expected: 'Grade=Dark theme' },
+      { grade: 0 as const, expected: 'Grade=Normal' },
+      { grade: 200 as const, expected: 'Grade=Emphasis' },
     ];
 
     grades.forEach(({ grade, expected }) => {
@@ -167,7 +167,7 @@ describe('getVariantName', () => {
   });
 
   it('should format optical sizes with "dp" suffix', () => {
-    const sizes = [20, 24, 40, 48];
+    const sizes = [20, 24, 40, 48] as const;
 
     sizes.forEach((size) => {
       const variantData = createVariantData({
@@ -222,10 +222,10 @@ describe('getVariantName', () => {
     const names = new Set<string>();
 
     const styles = ['rounded', 'outlined'];
-    const weights = [400, 700];
-    const fills = [0, 1];
-    const grades = [0, 200];
-    const sizes = [24, 48];
+    const weights = [400, 700] as const;
+    const fills = [0, 1] as const;
+    const grades = [0, 200] as const;
+    const sizes = [24, 48] as const;
 
     for (const style of styles) {
       for (const weight of weights) {
@@ -454,7 +454,7 @@ describe('Variant naming integration', () => {
   it('should work with complete icon generation workflow', () => {
     // Simulate generating multiple variants
     const styles = ['rounded', 'outlined', 'sharp'];
-    const weights = [400, 700];
+    const weights = [400, 700] as const;
 
     const variantNames: string[] = [];
 

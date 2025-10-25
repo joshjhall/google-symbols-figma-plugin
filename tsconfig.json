@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0",
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
@@ -17,7 +18,7 @@
       "@utils/*": ["src/utils/*"],
       "@lib/*": ["src/lib/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
+    "types": ["@figma/plugin-typings", "vitest/globals"]
   },
   "include": ["src/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "dist"]

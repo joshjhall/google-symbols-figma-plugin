@@ -189,7 +189,7 @@ describe('component-factory', () => {
     });
 
     it('should handle all optical sizes', async () => {
-      const sizes = [20, 24, 40, 48];
+      const sizes = [20, 24, 40, 48] as const;
 
       for (const size of sizes) {
         resetMockFigmaAPI(mockFigma);

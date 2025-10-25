@@ -15,9 +15,9 @@ describe('PluginLogger', () => {
   let consoleError: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    consoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
-    consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    consoleLog = vi.spyOn(console, 'log').mockImplementation(() => {}) as any;
+    consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {}) as any;
+    consoleError = vi.spyOn(console, 'error').mockImplementation(() => {}) as any;
 
     // Reset logger to default state
     logger.setEnabled(true);

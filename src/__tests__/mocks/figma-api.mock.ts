@@ -111,7 +111,7 @@ export function createMockVectorNode(name = 'vector'): MockVectorNode {
         }
       }
       this.parent = null;
-    }),
+    }) as any,
   };
 }
 
@@ -138,11 +138,11 @@ export function createMockFrameNode(name = 'frame', children: MockSceneNode[] = 
     appendChild: vi.fn(function (this: MockFrameNode, child: MockSceneNode) {
       child.parent = this;
       this.children.push(child);
-    }),
+    }) as any,
     resize: vi.fn(function (this: MockFrameNode, width: number, height: number) {
       this.width = width;
       this.height = height;
-    }),
+    }) as any,
     remove: vi.fn(function (this: MockFrameNode) {
       if (this.parent) {
         const parentWithChildren = this.parent as any;
@@ -155,7 +155,7 @@ export function createMockFrameNode(name = 'frame', children: MockSceneNode[] = 
       }
       this.parent = null;
       this.children = [];
-    }),
+    }) as any,
   };
 
   // Set parent reference for children
@@ -200,17 +200,17 @@ export function createMockComponentNode(name = 'Component'): MockComponentNode {
       // Add to new parent
       child.parent = this;
       this.children.push(child);
-    }),
+    }) as any,
     resize: vi.fn(function (this: MockComponentNode, width: number, height: number) {
       this.width = width;
       this.height = height;
-    }),
+    }) as any,
     getPluginData: vi.fn(function (this: MockComponentNode, key: string) {
       return pluginData.get(key) || '';
-    }),
+    }) as any,
     setPluginData: vi.fn(function (this: MockComponentNode, key: string, value: string) {
       pluginData.set(key, value);
-    }),
+    }) as any,
     remove: vi.fn(function (this: MockComponentNode) {
       if (this.parent) {
         const parentWithChildren = this.parent as any;
@@ -223,7 +223,7 @@ export function createMockComponentNode(name = 'Component'): MockComponentNode {
       }
       this.parent = null;
       this.children = [];
-    }),
+    }) as any,
   };
 
   return component;
@@ -255,7 +255,7 @@ export function createMockComponentSetNode(
     appendChild: vi.fn(function (this: MockComponentSetNode, child: MockComponentNode) {
       child.parent = this;
       this.children.push(child);
-    }),
+    }) as any,
     insertChild: vi.fn(function (
       this: MockComponentSetNode,
       index: number,
@@ -269,17 +269,17 @@ export function createMockComponentSetNode(
       // Insert at new position
       this.children.splice(index, 0, child);
       child.parent = this;
-    }),
+    }) as any,
     resize: vi.fn(function (this: MockComponentSetNode, width: number, height: number) {
       this.width = width;
       this.height = height;
-    }),
+    }) as any,
     getPluginData: vi.fn(function (this: MockComponentSetNode, key: string) {
       return pluginData.get(key) || '';
-    }),
+    }) as any,
     setPluginData: vi.fn(function (this: MockComponentSetNode, key: string, value: string) {
       pluginData.set(key, value);
-    }),
+    }) as any,
     remove: vi.fn(),
   };
 
@@ -307,13 +307,13 @@ export interface MockFigmaAPI {
  */
 export function createMockFigmaAPI(): MockFigmaAPI {
   return {
-    createComponent: vi.fn(() => createMockComponentNode()),
+    createComponent: vi.fn(() => createMockComponentNode()) as any,
     createNodeFromSvg: vi.fn((_svg: string) => {
       // Simulate creating a frame with vector children from SVG
       const vector1 = createMockVectorNode('path');
       const vector2 = createMockVectorNode('circle');
       return createMockFrameNode('svg-frame', [vector1, vector2]);
-    }),
+    }) as any,
     combineAsVariants: vi.fn(
       (components: MockComponentNode[], parent: any): MockComponentSetNode => {
         const componentSet = createMockComponentSetNode('IconSet', components);
