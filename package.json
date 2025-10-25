@@ -13,12 +13,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/google-symbols-figma-plugin.git"
+    "url": "https://github.com/joshjhall/google-symbols-figma-plugin.git"
   },
   "bugs": {
-    "url": "https://github.com/your-org/google-symbols-figma-plugin/issues"
+    "url": "https://github.com/joshjhall/google-symbols-figma-plugin/issues"
   },
-  "homepage": "https://github.com/your-org/google-symbols-figma-plugin#readme",
+  "homepage": "https://github.com/joshjhall/google-symbols-figma-plugin#readme",
   "license": "MIT",
   "author": "Joshua Hall <josh@yaplabs.com>",
   "type": "module",

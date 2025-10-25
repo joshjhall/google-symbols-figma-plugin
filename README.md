@@ -1,26 +1,27 @@
 # Google Material Symbols Figma Plugin
 
-[![CI](https://github.com/your-org/google-symbols-figma-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/google-symbols-figma-plugin/actions/workflows/ci.yml)
-[![Release](https://github.com/your-org/google-symbols-figma-plugin/actions/workflows/release.yml/badge.svg)](https://github.com/your-org/google-symbols-figma-plugin/actions/workflows/release.yml)
+[![CI](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/ci.yml)
+[![Release](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/release.yml/badge.svg)](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-A Figma plugin for generating and maintaining a complete Google Material Symbols library using variable fonts. Automatically syncs with Google's official Material Design Icons repository.
+A Figma plugin for generating and maintaining a complete Google Material Symbols library. Automatically syncs with Google's official Material Design Icons repository and generates SVG-based Figma components with comprehensive variant support.
 
 ## ✨ Features
 
 - 🎨 **4000+ Icons**: Complete Material Symbols library
-- 🔤 **Variable Fonts**: Efficient rendering using font ligatures
-- 🎛️ **Full Customization**: Weight (100-700), Grade (-25 to 200), Optical Size (20-48), Fill (0-1)
-- 📁 **Smart Organization**: Automatic category-based page structure
-- 🔄 **Incremental Updates**: Intelligent diffing preserves customizations
-- ⚡ **Performance Optimized**: Handles hundreds of thousands of variants efficiently
+- 🎨 **SVG Components**: High-quality vector components with proper Figma structure
+- 🎛️ **504 Variants per Icon**: 7 styles × 6 weights × 2 fills × 3 grades × 4 optical sizes
+- 📁 **Smart Organization**: Automatic category-based page structure (alphabetical sets)
+- 🔄 **Incremental Updates**: Intelligent content hash comparison preserves customizations
+- ⚡ **Performance Optimized**: Batch processing with rate limiting for GitHub API
 - 🤖 **Auto-Updates**: Weekly automated checks for new icons from Google
+- 🎯 **Commit-Based Versioning**: Pins to specific commit SHA for consistency
 
 ## 🚀 Quick Start
 
 ### Installation
 
-1. Download the latest release from [Releases](https://github.com/your-org/google-symbols-figma-plugin/releases)
+1. Download the latest release from [Releases](https://github.com/joshjhall/google-symbols-figma-plugin/releases)
 2. Open Figma Desktop
 3. Go to **Plugins → Development → Import plugin from manifest**
 4. Select the `manifest.json` file
@@ -61,7 +62,7 @@ A Figma plugin for generating and maintaining a complete Google Material Symbols
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/google-symbols-figma-plugin.git
+git clone https://github.com/joshjhall/google-symbols-figma-plugin.git
 cd google-symbols-figma-plugin
 
 # Install dependencies
@@ -116,6 +117,7 @@ google-symbols-figma-plugin/
 The plugin automatically tracks changes from [Google's Material Design Icons repository](https://github.com/google/material-design-icons).
 
 **Manual Update:**
+
 ```bash
 pnpm icons:update    # Fetch latest icon list
 pnpm icons:compare   # Generate comparison
@@ -123,6 +125,7 @@ pnpm build           # Rebuild plugin
 ```
 
 **Automated:**
+
 - GitHub Actions checks for updates weekly
 - Creates PR automatically when updates found
 - Includes delta of changes
@@ -157,27 +160,30 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## 📊 Performance
 
-| Metric | Value |
-|--------|-------|
-| Total Icons | 4000+ |
-| Variants per Icon | ~72 (with 3 weights) |
-| Generation Time | ~10-15 minutes |
-| Update Time (with delta) | ~10-15 minutes |
-| Update Time (without delta) | ~3-4 hours |
+| Metric                   | Value                                                     |
+| ------------------------ | --------------------------------------------------------- |
+| Total Icons              | 4000+                                                     |
+| Variants per Icon        | 504 (7 styles × 6 weights × 2 fills × 3 grades × 4 sizes) |
+| Generation Time (full)   | Varies by category and API rate limits                    |
+| Update Time (with delta) | Faster - only changed icons                               |
+| Rate Limiting            | Exponential backoff (1m → 2m → 4m → 8m → 10m max)         |
 
 ## 🐛 Troubleshooting
 
 ### Plugin crashes during generation
+
 - Reduce batch size in configuration
 - Generate fewer weight variants
 - Split generation across multiple sessions
 
 ### Icons don't render correctly
-- Ensure Material Symbols fonts are installed
-- Check font variable axis support
-- Verify ligature names match font version
+
+- Check SVG content is being fetched from GitHub
+- Verify commit SHA in icon-list-metadata.json is valid
+- Ensure network connectivity to raw.githubusercontent.com
 
 ### Rate limiting errors
+
 - Plugin auto-retries with exponential backoff
 - Re-run plugin later if limits exceeded
 - Consider GitHub token for higher limits
@@ -194,9 +200,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 [Report a Bug](https://github.com/your-org/google-symbols-figma-plugin/issues/new?template=bug_report.md)
-- 💡 [Request a Feature](https://github.com/your-org/google-symbols-figma-plugin/issues/new?template=feature_request.md)
-- 💬 [Discussions](https://github.com/your-org/google-symbols-figma-plugin/discussions)
+- 🐛 [Report a Bug](https://github.com/joshjhall/google-symbols-figma-plugin/issues/new?template=bug_report.md)
+- 💡 [Request a Feature](https://github.com/joshjhall/google-symbols-figma-plugin/issues/new?template=feature_request.md)
+- 💬 [Discussions](https://github.com/joshjhall/google-symbols-figma-plugin/discussions)
 
 ---
 
