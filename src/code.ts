@@ -11,7 +11,7 @@
 import { MessageHandler } from './lib/message-handler';
 import { setGitHubRef } from './lib/github';
 import { logger } from './lib/utils';
-import { PLUGIN_MESSAGES } from './types';
+import { PLUGIN_MESSAGES, type UIMessage } from './types';
 import {
   handleCategoryGeneration,
   logCumulativeChangeStatus,
@@ -185,8 +185,8 @@ figma.ui.onmessage = async (msg: { type: string; [key: string]: unknown }) => {
         break;
 
       default:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await messageHandler.handleMessage(msg as any);
+        // Type-safe cast: msg conforms to UIMessage for messages handled by MessageHandler
+        await messageHandler.handleMessage(msg as UIMessage);
     }
   } catch (error) {
     logger.error('Error handling message:', error);
