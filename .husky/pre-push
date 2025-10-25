@@ -1,0 +1,15 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🧪 Running pre-push checks..."
+
+# Type checking
+echo "  → Type checking..."
+pnpm typecheck || exit 1
+
+# Run tests
+echo "  → Running tests..."
+pnpm test:run || exit 1
+
+echo "✅ All pre-push checks passed!"
+exit 0

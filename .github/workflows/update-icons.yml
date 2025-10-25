@@ -1,0 +1,116 @@
+name: Auto-Update Material Icons
+
+on:
+  schedule:
+    # Run every Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-icons:
+    name: Check and Update Icons
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Update icon list from Google repo
+        run: pnpm icons:update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet src/lib/icons/icon-list-metadata.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No icon updates found"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Icon updates found!"
+          fi
+
+      - name: Compare and generate categories
+        if: steps.check_changes.outputs.changed == 'true'
+        run: pnpm icons:compare
+
+      - name: Build plugin
+        if: steps.check_changes.outputs.changed == 'true'
+        run: pnpm build
+
+      - name: Run tests
+        if: steps.check_changes.outputs.changed == 'true'
+        run: pnpm test:run
+
+      - name: Extract commit info
+        if: steps.check_changes.outputs.changed == 'true'
+        id: commit_info
+        run: |
+          COMMIT_SHA=$(jq -r '.commit' src/lib/icons/icon-list-metadata.json)
+          ICON_COUNT=$(jq -r '.totalIcons' src/lib/icons/icon-list-metadata.json)
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "icon_count=$ICON_COUNT" >> $GITHUB_OUTPUT
+          echo "short_sha=${COMMIT_SHA:0:7}" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update Material Icons to ${{ steps.commit_info.outputs.short_sha }}'
+          title: 'chore: auto-update Material Icons (${{ steps.commit_info.outputs.short_sha }})'
+          body: |
+            ## 🎨 Automated Icon Update
+
+            This PR updates the Material Symbols icon library from Google's repository.
+
+            **Details:**
+            - **Commit SHA:** `${{ steps.commit_info.outputs.commit_sha }}`
+            - **Total Icons:** ${{ steps.commit_info.outputs.icon_count }}
+            - **Source:** https://github.com/google/material-design-icons
+
+            ### Changes
+            - Updated icon list metadata
+            - Regenerated categories (if needed)
+            - Rebuilt plugin with latest icons
+
+            ### Testing
+            - ✅ All tests passed
+            - ✅ Plugin builds successfully
+
+            ---
+            🤖 This PR was automatically created by the [Update Icons workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          branch: auto-update-icons-${{ steps.commit_info.outputs.short_sha }}
+          delete-branch: true
+          labels: |
+            automated
+            icons
+            chore
+          assignees: ${{ github.repository_owner }}
+
+      - name: No updates needed
+        if: steps.check_changes.outputs.changed == 'false'
+        run: |
+          echo "✅ Icon library is already up to date!"
+          echo "No changes detected from Google's Material Icons repository."
