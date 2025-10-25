@@ -1,0 +1,11 @@
+{
+  "name": "Material Icons Generator",
+  "id": "terroir-material-icons",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": ["figma"],
+  "permissions": ["teamlibrary"]
+}
