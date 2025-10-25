@@ -1,0 +1,37 @@
+{
+  "name": "Google Material Symbols Figma Plugin",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
+
+  "postCreateCommand": "sleep 2 && pnpm install",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "figma.figma-vscode-extension",
+        "ms-vscode.vscode-typescript-next",
+        "vitest.explorer"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "eslint.validate": [
+          "javascript",
+          "typescript",
+          "javascriptreact",
+          "typescriptreact"
+        ],
+        "npm.packageManager": "pnpm"
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

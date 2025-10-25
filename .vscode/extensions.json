@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "figma.figma-vscode-extension",
+    "vitest.explorer",
+    "ms-vscode.vscode-typescript-next"
+  ]
+}

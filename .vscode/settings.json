@@ -1,0 +1,59 @@
+{
+  // Editor settings
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+
+  // JavaScript/TypeScript settings
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.format.semicolons": "insert",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+
+  // ESLint settings
+  "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+  "eslint.enable": true,
+  "eslint.lintTask.enable": true,
+  "eslint.format.enable": true,
+
+  // Git settings
+  "git.rebaseWhenSync": true,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+
+  // Package manager
+  "npm.packageManager": "pnpm",
+
+  // Prettier settings
+  "prettier.requireConfig": true,
+
+  // File watchers - exclude build artifacts and dependencies
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/dist/**": true,
+    "**/coverage/**": true,
+    "**/.pnpm/**": true
+  },
+
+  // Search exclusions
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/.git": true,
+    "**/.pnpm": true
+  },
+
+  // Test settings
+  "vitest.enable": true,
+  "vitest.commandLine": "pnpm exec vitest"
+}
