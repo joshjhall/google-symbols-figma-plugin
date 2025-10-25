@@ -5,6 +5,8 @@
  * Tests workflow orchestration, rename handling, and progress tracking.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { handleCategoryGeneration, type CategoryGenerationConfig } from '../category-generation';
 import { logger } from '@lib/utils';

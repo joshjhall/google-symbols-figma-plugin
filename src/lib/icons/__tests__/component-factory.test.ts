@@ -5,6 +5,8 @@
  * Tests SVG parsing, component creation/update, and hash management.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   getStoredHash,

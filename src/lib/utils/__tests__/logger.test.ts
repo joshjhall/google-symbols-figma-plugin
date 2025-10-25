@@ -5,6 +5,8 @@
  * Tests log levels, filtering, formatting, timing, and context.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { logger } from '../logger';
 
@@ -215,7 +217,6 @@ describe('PluginLogger', () => {
     it('should handle figma.notify when available', () => {
       // Mock figma global
       const mockNotify = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global as any).figma = { notify: mockNotify };
 
       logger.notify('Test notification');
@@ -225,13 +226,11 @@ describe('PluginLogger', () => {
       expect(mockNotify).toHaveBeenCalledWith('Error notification', { error: true, timeout: 5000 });
 
       // Cleanup
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (global as any).figma;
     });
 
     it('should work without figma global', () => {
       // Ensure figma is undefined
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (global as any).figma;
 
       // Should not throw

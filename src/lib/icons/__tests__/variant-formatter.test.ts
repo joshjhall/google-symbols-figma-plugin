@@ -5,6 +5,8 @@
  * Tests pure functions for Material Icons variant naming conventions.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, vi } from 'vitest';
 import {
   DEFAULT_VARIANT,
