@@ -1,0 +1,272 @@
+[
+  {
+    "name": "Set 01: 10k-air",
+    "count": 154,
+    "components": 77616,
+    "firstIcon": "10k",
+    "lastIcon": "airwave",
+    "lastIconExclusive": "alarm",
+    "sample": ["10k", "10mp", "11mp", "123", "12mp"]
+  },
+  {
+    "name": "Set 02: ala-arr",
+    "count": 146,
+    "components": 73584,
+    "firstIcon": "alarm",
+    "lastIcon": "arrows_outward",
+    "lastIconExclusive": "art_track",
+    "sample": ["alarm", "alarm_add", "alarm_off", "alarm_on", "alarm_pause"]
+  },
+  {
+    "name": "Set 03: art-bat",
+    "count": 179,
+    "components": 90216,
+    "firstIcon": "art_track",
+    "lastIcon": "battery_very_low",
+    "lastIconExclusive": "beach_access",
+    "sample": ["art_track", "article", "article_person", "article_shortcut", "artist"]
+  },
+  {
+    "name": "Set 04: bea-cal",
+    "count": 166,
+    "components": 83664,
+    "firstIcon": "beach_access",
+    "lastIcon": "call_to_action",
+    "lastIconExclusive": "camera",
+    "sample": ["beach_access", "bed", "bedroom_baby", "bedroom_child", "bedroom_parent"]
+  },
+  {
+    "name": "Set 05: cam-cli",
+    "count": 147,
+    "components": 74088,
+    "firstIcon": "camera",
+    "lastIcon": "clinical_notes",
+    "lastIconExclusive": "clock_arrow_down",
+    "sample": ["camera", "camera_enhance", "camera_front", "camera_indoor", "camera_outdoor"]
+  },
+  {
+    "name": "Set 06: clo-csv",
+    "count": 146,
+    "components": 73584,
+    "firstIcon": "clock_arrow_down",
+    "lastIcon": "csv",
+    "lastIconExclusive": "currency_bitcoin",
+    "sample": [
+      "clock_arrow_down",
+      "clock_arrow_up",
+      "clock_loader_10",
+      "clock_loader_20",
+      "clock_loader_40"
+    ]
+  },
+  {
+    "name": "Set 07: cur-div",
+    "count": 147,
+    "components": 74088,
+    "firstIcon": "currency_bitcoin",
+    "lastIcon": "diversity_4",
+    "lastIconExclusive": "dns",
+    "sample": [
+      "currency_bitcoin",
+      "currency_exchange",
+      "currency_franc",
+      "currency_lira",
+      "currency_pound"
+    ]
+  },
+  {
+    "name": "Set 08: dns-ene",
+    "count": 148,
+    "components": 74592,
+    "firstIcon": "dns",
+    "lastIcon": "energy_savings_leaf",
+    "lastIconExclusive": "engineering",
+    "sample": [
+      "dns",
+      "do_not_disturb_off",
+      "do_not_disturb_on",
+      "do_not_disturb_on_total_silence",
+      "do_not_step"
+    ]
+  },
+  {
+    "name": "Set 09: eng-fil",
+    "count": 156,
+    "components": 78624,
+    "firstIcon": "engineering",
+    "lastIcon": "filter_vintage",
+    "lastIconExclusive": "finance",
+    "sample": ["engineering", "enhanced_encryption", "ent", "enterprise", "enterprise_off"]
+  },
+  {
+    "name": "Set 10: fin-for",
+    "count": 154,
+    "components": 77616,
+    "firstIcon": "finance",
+    "lastIcon": "forward_to_inbox",
+    "lastIconExclusive": "foundation",
+    "sample": ["finance", "finance_chip", "finance_mode", "find_in_page", "find_replace"]
+  },
+  {
+    "name": "Set 11: fou-hea",
+    "count": 161,
+    "components": 81144,
+    "firstIcon": "foundation",
+    "lastIcon": "heat_pump_balance",
+    "lastIconExclusive": "height",
+    "sample": ["foundation", "fragrance", "frame_bug", "frame_exclamation", "frame_inspect"]
+  },
+  {
+    "name": "Set 12: hei-ios",
+    "count": 146,
+    "components": 73584,
+    "firstIcon": "height",
+    "lastIcon": "ios_share",
+    "lastIconExclusive": "iron",
+    "sample": ["height", "helicopter", "help", "help_center", "help_clinic"]
+  },
+  {
+    "name": "Set 13: iro-lis",
+    "count": 149,
+    "components": 75096,
+    "firstIcon": "iron",
+    "lastIcon": "lists",
+    "lastIconExclusive": "live_help",
+    "sample": ["iron", "jamboard_kiosk", "japanese_curry", "japanese_flag", "javascript"]
+  },
+  {
+    "name": "Set 14: liv-mic",
+    "count": 152,
+    "components": 76608,
+    "firstIcon": "live_help",
+    "lastIcon": "microwave_gen",
+    "lastIconExclusive": "military_tech",
+    "sample": ["live_help", "live_tv", "living", "local_activity", "local_atm"]
+  },
+  {
+    "name": "Set 15: mil-mul",
+    "count": 150,
+    "components": 75600,
+    "firstIcon": "military_tech",
+    "lastIcon": "multiple_stop",
+    "lastIconExclusive": "museum",
+    "sample": ["military_tech", "mimo", "mimo_disconnect", "mindfulness", "minimize"]
+  },
+  {
+    "name": "Set 16: mus-not",
+    "count": 157,
+    "components": 79128,
+    "firstIcon": "museum",
+    "lastIcon": "notifications_unread",
+    "lastIconExclusive": "numbers",
+    "sample": ["museum", "music_cast", "music_history", "music_note", "music_note_add"]
+  },
+  {
+    "name": "Set 17: num-per",
+    "count": 152,
+    "components": 76608,
+    "firstIcon": "numbers",
+    "lastIcon": "personal_places",
+    "lastIconExclusive": "pest_control",
+    "sample": ["numbers", "nutrition", "ods", "odt", "offline_bolt"]
+  },
+  {
+    "name": "Set 18: pes-pro",
+    "count": 149,
+    "components": 75096,
+    "firstIcon": "pest_control",
+    "lastIcon": "propane_tank",
+    "lastIconExclusive": "psychiatry",
+    "sample": ["pest_control", "pest_control_rodent", "pet_supplies", "pets", "phishing"]
+  },
+  {
+    "name": "Set 19: psy-roo",
+    "count": 146,
+    "components": 73584,
+    "firstIcon": "psychiatry",
+    "lastIcon": "room_service",
+    "lastIconExclusive": "rotate_90_degrees_ccw",
+    "sample": ["psychiatry", "psychology", "psychology_alt", "public", "public_off"]
+  },
+  {
+    "name": "Set 20: rot-set",
+    "count": 168,
+    "components": 84672,
+    "firstIcon": "rotate_90_degrees_ccw",
+    "lastIcon": "settop_component",
+    "lastIconExclusive": "severe_cold",
+    "sample": [
+      "rotate_90_degrees_ccw",
+      "rotate_90_degrees_cw",
+      "rotate_auto",
+      "rotate_left",
+      "rotate_right"
+    ]
+  },
+  {
+    "name": "Set 21: sev-spa",
+    "count": 151,
+    "components": 76104,
+    "firstIcon": "severe_cold",
+    "lastIcon": "spatial_tracking",
+    "lastIconExclusive": "speaker",
+    "sample": ["severe_cold", "shadow", "shadow_add", "shadow_minus", "shape_line"]
+  },
+  {
+    "name": "Set 22: spe-sub",
+    "count": 155,
+    "components": 78120,
+    "firstIcon": "speaker",
+    "lastIcon": "subway_walk",
+    "lastIconExclusive": "summarize",
+    "sample": ["speaker", "speaker_group", "speaker_notes", "speaker_notes_off", "speaker_phone"]
+  },
+  {
+    "name": "Set 23: sum-the",
+    "count": 152,
+    "components": 76608,
+    "firstIcon": "summarize",
+    "lastIcon": "thermostat_carbon",
+    "lastIconExclusive": "things_to_do",
+    "sample": ["summarize", "sunny", "sunny_snowing", "superscript", "supervised_user_circle"]
+  },
+  {
+    "name": "Set 24: thi-unf",
+    "count": 150,
+    "components": 75600,
+    "firstIcon": "things_to_do",
+    "lastIcon": "unfold_more_double",
+    "lastIconExclusive": "ungroup",
+    "sample": [
+      "things_to_do",
+      "thread_unread",
+      "threat_intelligence",
+      "thumb_down",
+      "thumb_down_off"
+    ]
+  },
+  {
+    "name": "Set 25: ung-wat",
+    "count": 160,
+    "components": 80640,
+    "firstIcon": "ungroup",
+    "lastIcon": "waterfall_chart",
+    "lastIconExclusive": "waves",
+    "sample": [
+      "ungroup",
+      "universal_currency",
+      "universal_currency_alt",
+      "universal_local",
+      "unknown_2"
+    ]
+  },
+  {
+    "name": "Set 26: wav-zoo",
+    "count": 92,
+    "components": 46368,
+    "firstIcon": "waves",
+    "lastIcon": "zoom_out_map",
+    "lastIconExclusive": "__END__",
+    "sample": ["waves", "waving_hand", "wb_auto", "wb_incandescent", "wb_iridescent"]
+  }
+]
