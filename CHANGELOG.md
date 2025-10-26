@@ -1,3 +1,15 @@
+## [1.2.1](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.2.0...v1.2.1) (2025-10-26)
+
+### Bug Fixes
+
+- add workflow_dispatch trigger to release.yml
+
+### Maintenance
+
+- update containers submodule to v4.3.1
+- update containers submodule to v4.3.0
+- update containers submodule to v4.2.0
+
 ## [1.2.0](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.1.0...v1.2.0) (2025-10-26)
 
 ### Features
