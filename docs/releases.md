@@ -139,41 +139,12 @@ Add these to your repository secrets:
 ### Prerequisites
 
 1. Icon update PR has been merged to main
-2. You have Figma Desktop installed
-3. You have `gh` CLI installed and authenticated
+2. You have `gh` CLI installed and authenticated
+3. (Optional) Figma Desktop installed if including .fig files
 
-### Steps
+### One-Command Release
 
-#### 1. Pull Latest Changes
-
-```bash
-git checkout main
-git pull origin main
-```
-
-#### 2. Generate Figma Files
-
-1. Open Figma Desktop
-2. Run: **Plugins → Material Icons Generator**
-3. Click "Generate All Categories"
-4. Wait for generation to complete (~10-15 minutes with delta updates)
-5. For each of the 26 generated pages:
-   - Right-click the page tab
-   - Select "Save as .fig file"
-   - Save to `release/` directory
-   - Use naming: `Set_01_10k-air.fig`, etc.
-
-#### 3. Verify Files
-
-```bash
-# Check file count (should be 26)
-ls -1 release/*.fig | wc -l
-
-# Check total size (should be ~900MB)
-du -sh release/
-```
-
-#### 4. Run Release Script
+The `scripts/release.sh` script handles the complete release workflow:
 
 ```bash
 # Create a patch release (1.0.0 → 1.0.1)
@@ -186,32 +157,73 @@ du -sh release/
 ./scripts/release.sh major
 ```
 
-The script will:
+**What the script does automatically:**
 
-- ✅ Run tests, lint, and type checking
-- ✅ Build the plugin
-- ✅ Bump version in `package.json` and `manifest.json`
-- ✅ Create git tag
-- ✅ Push to GitHub
-- ✅ Create GitHub Release with all .fig files attached
-- ✅ Generate release notes with icon metadata
+1. ✅ Runs tests, lint, and type checking
+2. ✅ Builds the plugin
+3. ✅ Bumps version in `package.json` and `manifest.json`
+4. ✅ Updates `CHANGELOG.md` with conventional commit entries
+5. ✅ Commits all changes
+6. ✅ Creates and pushes git tag
+7. ✅ Pushes to GitHub
+8. ✅ Creates GitHub Release
+9. ✅ Uploads all `.fig` files from `release/` directory (if present)
 
-#### 5. Verify Release
+### Including .fig Files (Optional)
+
+If you want to include pre-generated Figma files in the release:
+
+#### 1. Generate Figma Files (Before Running Release Script)
+
+1. Pull latest changes: `git pull origin main`
+2. Open Figma Desktop
+3. Run: **Plugins → Material Icons Generator**
+4. Click "Generate All Categories"
+5. Wait for generation (~10-15 minutes with delta updates)
+6. For each of the 26 generated pages:
+   - Right-click the page tab
+   - Select "Save as .fig file"
+   - Save to `release/` directory
+   - Use naming: `Set_01_10k-air.fig`, etc.
+
+#### 2. Verify Files
+
+```bash
+# Check file count (should be 26)
+ls -1 release/*.fig | wc -l
+
+# Check total size (should be ~900MB)
+du -sh release/
+```
+
+#### 3. Run Release Script
+
+Now run the release script as shown above. It will automatically detect and upload all `.fig` files.
+
+### Without .fig Files
+
+The release script works fine without .fig files:
+
+- It will create the release successfully
+- Release notes will indicate no .fig files are included
+- You can add them later with: `gh release upload vX.X.X release/*.fig`
+
+### Verify Release
 
 1. Visit: https://github.com/joshjhall/google-symbols-figma-plugin/releases
-2. Check that all 26 .fig files are attached as assets
-3. Download one .fig file and test importing to Figma
-4. Verify icons render correctly
+2. Check that all .fig files are attached (if you included them)
+3. Verify CHANGELOG.md was updated
+4. Test downloading and importing a .fig file to Figma
 
-#### 6. Cleanup (Optional)
+### Cleanup (Optional)
 
 ```bash
 # Remove local .fig files (they're on GitHub now)
 rm release/*.fig
 
 # Or archive them
-mkdir -p ~/.figma-releases/v1.0.0/
-mv release/*.fig ~/.figma-releases/v1.0.0/
+mkdir -p ~/.figma-releases/vX.X.X/
+mv release/*.fig ~/.figma-releases/vX.X.X/
 ```
 
 ## Versioning Strategy
@@ -232,27 +244,6 @@ mv release/*.fig ~/.figma-releases/v1.0.0/
   - Monthly for accumulated icon updates (minor)
   - As needed for breaking changes (major)
 
-## Alternative: Release Without .fig Files
-
-If you want to release without .fig files (e.g., plugin-only update):
-
-```bash
-# Skip .fig file check
-./scripts/release.sh patch --skip-fig-check
-
-# Then manually create GitHub Release
-gh release create v1.0.1 \
-  --title "Plugin Update v1.0.1" \
-  --notes "Bug fixes and improvements"
-```
-
-You can add .fig files to an existing release later:
-
-```bash
-# Generate .fig files first, then:
-gh release upload v1.0.1 release/*.fig
-```
-
 ## Troubleshooting
 
 ### Tests Fail in CI
@@ -268,17 +259,36 @@ gh release upload v1.0.1 release/*.fig
 - With delta updates: 10-15 minutes (only changed icons)
 - Make sure icon changes are properly detected
 
-### GitHub Release Fails
+### Release Script Fails
+
+**Check prerequisites:**
 
 ```bash
-# Check gh CLI is authenticated
+# Ensure gh CLI is authenticated
 gh auth status
 
-# Try creating release manually
-gh release create v1.0.0 \
-  --title "Release v1.0.0" \
-  --notes "Release notes" \
-  release/*.fig
+# Ensure working directory is clean
+git status
+
+# Ensure you're on main branch
+git branch --show-current
+```
+
+**If release was partially created:**
+
+```bash
+# Delete the tag locally and remotely
+git tag -d vX.X.X
+git push origin :refs/tags/vX.X.X
+
+# Delete the GitHub Release
+gh release delete vX.X.X
+
+# Reset the version bump
+git reset --hard HEAD~1
+
+# Try again
+./scripts/release.sh patch
 ```
 
 ### Rate Limiting
