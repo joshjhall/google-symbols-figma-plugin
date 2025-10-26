@@ -36,5 +36,7 @@ export default {
     'subject-full-stop': [2, 'never', '.'],
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'],
+    // Allow longer lines in commit body (for URLs, etc.)
+    'body-max-line-length': [0, 'always', Infinity],
   },
 };
