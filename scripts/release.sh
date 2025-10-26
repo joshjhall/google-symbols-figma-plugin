@@ -95,20 +95,20 @@ if [[ -n "$PREV_TAG" ]]; then
     # Skip empty lines
     [[ -z "$commit" ]] && continue
 
-    # Parse conventional commit format
-    if [[ "$commit" =~ ^feat(\([^)]+\))?: ]]; then
+    # Parse conventional commit format (simplified regex for bash compatibility)
+    if [[ "$commit" =~ ^feat ]]; then
       desc="${commit#*: }"
       FEATURES+="- $desc"$'\n'
-    elif [[ "$commit" =~ ^fix(\([^)]+\))?: ]]; then
+    elif [[ "$commit" =~ ^fix ]]; then
       desc="${commit#*: }"
       FIXES+="- $desc"$'\n'
-    elif [[ "$commit" =~ ^docs(\([^)]+\))?: ]]; then
+    elif [[ "$commit" =~ ^docs ]]; then
       desc="${commit#*: }"
       DOCS+="- $desc"$'\n'
-    elif [[ "$commit" =~ ^chore(\([^)]+\))?: ]]; then
+    elif [[ "$commit" =~ ^chore ]]; then
       desc="${commit#*: }"
       CHORES+="- $desc"$'\n'
-    elif [[ ! "$commit" =~ ^(test|style|refactor|perf|ci|build)(\([^)]+\))?: ]]; then
+    elif [[ ! "$commit" =~ ^(test|style|refactor|perf|ci|build) ]]; then
       # Include non-conventional commits that aren't internal changes
       OTHERS+="- $commit"$'\n'
     fi
