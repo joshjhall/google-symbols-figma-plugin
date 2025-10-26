@@ -240,30 +240,44 @@ jobs:
             automated
 
       - name: Notify success via Pushover
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true' && secrets.PUSHOVER_TOKEN != ''
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        env:
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: |
-          curl -s \
-            --form-string "token=${{ secrets.PUSHOVER_TOKEN }}" \
-            --form-string "user=${{ secrets.PUSHOVER_USER }}" \
-            --form-string "title=Icon Update Available" \
-            --form-string "message=✅ New Material Icons update ready for review (commit ${{ steps.update.outputs.short_sha }})" \
-            --form-string "priority=0" \
-            --form-string "url=${{ steps.cpr.outputs.pull-request-url }}" \
-            --form-string "url_title=View PR" \
-            https://api.pushover.net/1/messages.json
+          if [ -n "$PUSHOVER_TOKEN" ] && [ -n "$PUSHOVER_USER" ]; then
+            curl -s \
+              --form-string "token=$PUSHOVER_TOKEN" \
+              --form-string "user=$PUSHOVER_USER" \
+              --form-string "title=Icon Update Available" \
+              --form-string "message=✅ New Material Icons update ready for review (commit ${{ steps.update.outputs.short_sha }})" \
+              --form-string "priority=0" \
+              --form-string "url=${{ steps.cpr.outputs.pull-request-url }}" \
+              --form-string "url_title=View PR" \
+              https://api.pushover.net/1/messages.json
+          else
+            echo "Pushover credentials not configured, skipping notification"
+          fi
 
       - name: Notify failure via Pushover
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'false' && secrets.PUSHOVER_TOKEN != ''
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'false'
+        env:
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: |
-          curl -s \
-            --form-string "token=${{ secrets.PUSHOVER_TOKEN }}" \
-            --form-string "user=${{ secrets.PUSHOVER_USER }}" \
-            --form-string "title=Icon Update Failed" \
-            --form-string "message=❌ Icon update for commit ${{ steps.update.outputs.short_sha }} failed tests" \
-            --form-string "priority=1" \
-            --form-string "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --form-string "url_title=View Logs" \
-            https://api.pushover.net/1/messages.json
+          if [ -n "$PUSHOVER_TOKEN" ] && [ -n "$PUSHOVER_USER" ]; then
+            curl -s \
+              --form-string "token=$PUSHOVER_TOKEN" \
+              --form-string "user=$PUSHOVER_USER" \
+              --form-string "title=Icon Update Failed" \
+              --form-string "message=❌ Icon update for commit ${{ steps.update.outputs.short_sha }} failed tests" \
+              --form-string "priority=1" \
+              --form-string "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              --form-string "url_title=View Logs" \
+              https://api.pushover.net/1/messages.json
+          else
+            echo "Pushover credentials not configured, skipping notification"
+          fi
 
       - name: Summary
         if: always()
