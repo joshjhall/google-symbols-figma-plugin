@@ -1,3 +1,19 @@
+## [1.1.0](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.0.1...v1.1.0) (2025-10-26)
+
+### Features
+
+- make release.sh fully automated with CHANGELOG management
+
+### Bug Fixes
+
+- simplify regex patterns for bash compatibility
+- correct grep pattern for submodule detection
+- ignore submodule changes in clean directory check
+
+### Documentation
+
+- clarify manual release process and Pushover setup
+
 ## [1.0.1](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.0.0...v1.0.1) (2025-10-26)
 
 ### Bug Fixes
