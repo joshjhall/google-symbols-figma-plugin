@@ -1,9 +1,22 @@
 name: Release
 
-on:
-  push:
-    branches:
-      - main
+# Disabled: Releases require manual .fig file generation and upload
+# Use scripts/release.sh for manual releases instead
+#
+# Process:
+# 1. Icon update PR is merged
+# 2. Generate .fig files in Figma Desktop (~10-15 min)
+# 3. Run: ./scripts/release.sh minor
+# 4. Script creates release with all .fig files attached
+#
+# To re-enable automated releases (without .fig files):
+# - Uncomment the 'on:' trigger below
+# - Uncomment the 'jobs' section
+
+# on:
+#   push:
+#     branches:
+#       - main
 
 permissions:
   contents: write
@@ -11,37 +24,13 @@ permissions:
   pull-requests: write
 
 jobs:
-  release:
-    name: Release
+  # Disabled - see comment above
+  placeholder:
+    name: Manual Release Process
     runs-on: ubuntu-latest
+    if: false # Never run
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build plugin
-        run: pnpm build
-
-      - name: Run tests
-        run: pnpm test:run
-
-      - name: Semantic Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm exec semantic-release
+      - name: Info
+        run: |
+          echo "This workflow is disabled."
+          echo "Use scripts/release.sh for manual releases with .fig files."

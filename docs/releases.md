@@ -9,6 +9,17 @@ The release process is split into two phases:
 1. **Automated (CI/CD)**: Detect icon updates from Google, run tests, create PR
 2. **Manual (You)**: Review changes, generate .fig files, create release
 
+## Important: Manual Releases Required
+
+**Why manual?** The automated semantic-release workflow has been **disabled** because:
+
+- .fig files are ~900MB and cannot be packaged automatically
+- .fig files must be generated locally in Figma Desktop
+- Manual process ensures .fig files match the icon data
+
+**What's automated:** Icon update detection and PR creation
+**What's manual:** .fig generation and GitHub Release creation with `scripts/release.sh`
+
 ## Phase 1: Automated Icon Updates (CI/CD)
 
 ### Workflow
