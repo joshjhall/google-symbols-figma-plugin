@@ -34,10 +34,10 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
 fi
 
 # Ensure clean working directory (ignore submodule changes)
-if [ -n "$(git status --porcelain | grep -v '^.m')" ]; then
+if [ -n "$(git status --porcelain | grep -v '^ M')" ]; then
   echo "❌ Error: Working directory is not clean"
   echo "Please commit or stash your changes first"
-  git status --short | grep -v '^.m'
+  git status --short | grep -v '^ M'
   exit 1
 fi
 
