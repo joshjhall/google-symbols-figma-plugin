@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - TBD
 
 ### Added
+
 - Initial release of Google Material Symbols Figma Plugin
 - Support for 4000+ Material Symbol icons
 - Variable font rendering with ligatures
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Development environment with DevContainer support
 
 ### Features
+
 - Icon generation from Google's Material Design Icons repository
 - Intelligent diffing preserves user customizations
 - Batch processing for performance optimization
@@ -28,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Category mapping for better organization
 
 ### Documentation
+
 - Complete installation and usage guides
 - Architecture overview
 - Contributing guidelines

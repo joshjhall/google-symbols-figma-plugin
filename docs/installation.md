@@ -16,6 +16,7 @@ This guide will help you install and set up the Google Material Symbols Figma Pl
    - Download the latest `.zip` file
 
 2. **Extract the files:**
+
    ```bash
    unzip google-symbols-figma-plugin-v1.0.0.zip
    cd google-symbols-figma-plugin
@@ -36,17 +37,20 @@ This guide will help you install and set up the Google Material Symbols Figma Pl
 For development or contributing:
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/your-org/google-symbols-figma-plugin.git
    cd google-symbols-figma-plugin
    ```
 
 2. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 3. **Build the plugin:**
+
    ```bash
    pnpm build
    ```
@@ -65,16 +69,19 @@ After installation, verify the plugin is working:
 ## Troubleshooting
 
 ### Plugin doesn't appear in menu
+
 - Ensure you're using **Figma Desktop** (not browser)
 - Check that `manifest.json` is in the root directory
 - Try restarting Figma
 
 ### "Failed to load plugin" error
+
 - Verify `dist/code.js` exists and is not empty
 - Check Figma's Developer Console: **Plugins → Development → Show/Hide Console**
 - Rebuild the plugin: `pnpm build`
 
 ### Icons don't render properly
+
 - Install Material Symbols font:
   - Visit [Google Fonts](https://fonts.google.com/icons)
   - Download and install Material Symbols Rounded/Sharp/Outlined
@@ -96,6 +103,7 @@ pnpm build
 ```
 
 Then reload the plugin in Figma:
+
 - **Plugins → Development → Hot reload plugin** (if supported)
 - Or re-import the manifest
 
@@ -107,6 +115,7 @@ Then reload the plugin in Figma:
 4. Select **Remove**
 
 Or manually:
+
 - Delete the plugin directory from your system
 
 ## Next Steps

@@ -32,7 +32,7 @@ const DEFAULT_REF = 'master'; // Could be 'master', 'main', or a tag like '4.0.0
 async function main() {
   // Parse command line args
   const args = process.argv.slice(2);
-  const refArg = args.find(arg => arg.startsWith('--ref='));
+  const refArg = args.find((arg) => arg.startsWith('--ref='));
   const ref = refArg ? refArg.split('=')[1] : DEFAULT_REF;
   const skipVerify = args.includes('--skip-verify');
 
@@ -84,8 +84,8 @@ async function main() {
 
     // Filter to only directories
     const allIcons = treeData.tree
-      .filter(item => item.type === 'tree')
-      .map(item => item.path)
+      .filter((item) => item.type === 'tree')
+      .map((item) => item.path)
       .sort();
 
     console.log(`✅ Found ${allIcons.length} icon directories in repo`);
@@ -122,7 +122,7 @@ async function main() {
       if (invalidIcons.length > 0) {
         console.log(`⚠️  Invalid: ${invalidIcons.length} icons have no SVG files`);
         console.log(`\nSample invalid icons (first 20):`);
-        invalidIcons.slice(0, 20).forEach(icon => console.log(`  - ${icon}`));
+        invalidIcons.slice(0, 20).forEach((icon) => console.log(`  - ${icon}`));
         if (invalidIcons.length > 20) {
           console.log(`  ... and ${invalidIcons.length - 20} more`);
         }
@@ -155,12 +155,14 @@ async function main() {
       generatedAt: new Date().toISOString(),
       ref: ref,
       commitSha: commitSha,
-      source: 'repo-directories',  // Changed from codepoints
+      source: 'repo-directories', // Changed from codepoints
       totalIconDirectories: allIcons.length,
       validIcons: validIcons.length,
       invalidIcons: invalidIcons.length,
       skipVerify: skipVerify,
-      successRate: skipVerify ? 'N/A' : `${Math.round((validIcons.length / allIcons.length) * 100)}%`
+      successRate: skipVerify
+        ? 'N/A'
+        : `${Math.round((validIcons.length / allIcons.length) * 100)}%`,
     };
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2) + '\n');
     console.log(`✅ Written metadata to: src/lib/icons/icon-list-metadata.json`);
@@ -181,7 +183,6 @@ async function main() {
       console.log('2. Update category-mapping.json to remove any invalid icons from categories');
       console.log('3. Commit the updated all-icons.txt and category-mapping.json');
     }
-
   } catch (error) {
     console.error('❌ Error:', error);
     if (error instanceof Error) {

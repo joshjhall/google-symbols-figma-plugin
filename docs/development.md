@@ -30,6 +30,7 @@ pnpm install
 ```
 
 This installs all dependencies including:
+
 - TypeScript and type definitions
 - Build tools (esbuild)
 - Testing framework (Vitest)
@@ -70,12 +71,14 @@ pnpm dev:ui
 ```
 
 **Hot Reloading:**
+
 - In Figma: **Plugins → Development → Hot reload plugin**
 - Or close and reopen the plugin
 
 ### Making Changes
 
 1. **Create a branch:**
+
    ```bash
    git checkout -b feature/my-feature
    ```
@@ -87,6 +90,7 @@ pnpm dev:ui
    - UI changes: Reopen plugin UI
 
 4. **Run quality checks:**
+
    ```bash
    pnpm lint        # Check for linting errors
    pnpm typecheck   # Verify types
@@ -94,12 +98,13 @@ pnpm dev:ui
    ```
 
 5. **Commit changes:**
+
    ```bash
    git add .
    git commit -m "feat: add my feature"
    ```
 
-   *Note: Pre-commit hooks will run automatically*
+   _Note: Pre-commit hooks will run automatically_
 
 ## Available Commands
 
@@ -242,6 +247,7 @@ pnpm test generator
 ### Pre-commit Hooks
 
 Automatically run before each commit:
+
 - **Linting**: ESLint checks
 - **Formatting**: Prettier formatting
 - **Type checking**: TypeScript validation
@@ -249,6 +255,7 @@ Automatically run before each commit:
 ### Pre-push Hooks
 
 Automatically run before pushing:
+
 - **Type checking**: Full type check
 - **Tests**: All tests must pass
 
@@ -273,6 +280,7 @@ See [.devcontainer/README.md](../.devcontainer/README.md) for details.
 ## Troubleshooting
 
 ### "Cannot find module" errors
+
 ```bash
 # Clear and reinstall dependencies
 rm -rf node_modules
@@ -280,6 +288,7 @@ pnpm install
 ```
 
 ### Build failures
+
 ```bash
 # Clean and rebuild
 pnpm clean
@@ -287,12 +296,14 @@ pnpm build
 ```
 
 ### Type errors after update
+
 ```bash
 # Restart TypeScript server in VS Code
 # Command Palette → "TypeScript: Restart TS Server"
 ```
 
 ### Git hooks not running
+
 ```bash
 # Reinstall hooks
 pnpm prepare

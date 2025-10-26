@@ -49,10 +49,10 @@ interface CumulativeChanges {
 async function getCommitFromGitHistory(): Promise<string | null> {
   try {
     // Get the commit SHA from the last committed version of icon-list-metadata.json
-    const result = execSync(
-      'git show HEAD:packages/figma/icon-list-metadata.json',
-      { encoding: 'utf-8', cwd: path.join(__dirname, '../../..') }
-    );
+    const result = execSync('git show HEAD:packages/figma/icon-list-metadata.json', {
+      encoding: 'utf-8',
+      cwd: path.join(__dirname, '../../..'),
+    });
     const metadata = JSON.parse(result);
     return metadata.commitSha;
   } catch {
@@ -76,8 +76,8 @@ async function fetchIconChanges(oldCommit: string, newCommit: string): Promise<I
 
   const response = await fetch(compareUrl, {
     headers: {
-      'Accept': 'application/vnd.github.v3+json',
-    }
+      Accept: 'application/vnd.github.v3+json',
+    },
   });
 
   if (!response.ok) {
@@ -113,7 +113,7 @@ async function fetchIconChanges(oldCommit: string, newCommit: string): Promise<I
     changedIcons,
     newIcons,
     deletedIcons: [], // Hard to detect without full tree comparison
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -128,7 +128,7 @@ function loadCumulativeChanges(): CumulativeChanges {
     direct: {},
     commits: [],
     setRenames: {},
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   };
 }
 
@@ -143,14 +143,14 @@ function getCumulativeChanges(
   cumulative: CumulativeChanges,
   fromCommit: string,
   toCommit: string
-): { changedIcons: string[], newIcons: string[] } | null {
+): { changedIcons: string[]; newIcons: string[] } | null {
   // Check for direct path
   const directKey = `${fromCommit}->${toCommit}`;
   if (cumulative.direct[directKey]) {
     const delta = cumulative.direct[directKey];
     return {
       changedIcons: delta.changedIcons,
-      newIcons: delta.newIcons
+      newIcons: delta.newIcons,
     };
   }
 
@@ -168,14 +168,14 @@ function getCumulativeChanges(
     const key = `${path[i]}->${path[i + 1]}`;
     const delta = cumulative.direct[key];
     if (delta) {
-      delta.changedIcons.forEach(icon => allChangedIcons.add(icon));
-      delta.newIcons.forEach(icon => allNewIcons.add(icon));
+      delta.changedIcons.forEach((icon) => allChangedIcons.add(icon));
+      delta.newIcons.forEach((icon) => allNewIcons.add(icon));
     }
   }
 
   return {
     changedIcons: Array.from(allChangedIcons).sort(),
-    newIcons: Array.from(allNewIcons).sort()
+    newIcons: Array.from(allNewIcons).sort(),
   };
 }
 
@@ -185,7 +185,7 @@ function findCommitPath(
   toCommit: string
 ): string[] | null {
   // BFS to find path from fromCommit to toCommit
-  const queue: { commit: string, path: string[] }[] = [{ commit: fromCommit, path: [fromCommit] }];
+  const queue: { commit: string; path: string[] }[] = [{ commit: fromCommit, path: [fromCommit] }];
   const visited = new Set<string>([fromCommit]);
 
   while (queue.length > 0) {
@@ -308,29 +308,47 @@ async function main() {
 
       // Also save as icon-changes.json for backward compatibility
       const singleChangePath = path.join(__dirname, '..', 'icon-changes.json');
-      fs.writeFileSync(singleChangePath, JSON.stringify({
-        oldCommit: delta.oldCommit,
-        newCommit: delta.newCommit,
-        changedIcons: delta.changedIcons,
-        newIcons: delta.newIcons,
-        deletedIcons: delta.deletedIcons,
-        totalChanged: delta.changedIcons.length,
-        totalIcons: JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', 'all-icons-data.json'), 'utf-8')).length,
-        timestamp: delta.timestamp
-      }, null, 2));
+      fs.writeFileSync(
+        singleChangePath,
+        JSON.stringify(
+          {
+            oldCommit: delta.oldCommit,
+            newCommit: delta.newCommit,
+            changedIcons: delta.changedIcons,
+            newIcons: delta.newIcons,
+            deletedIcons: delta.deletedIcons,
+            totalChanged: delta.changedIcons.length,
+            totalIcons: JSON.parse(
+              fs.readFileSync(
+                path.join(__dirname, '..', 'src', 'lib', 'all-icons-data.json'),
+                'utf-8'
+              )
+            ).length,
+            timestamp: delta.timestamp,
+          },
+          null,
+          2
+        )
+      );
       console.log(`✅ Saved current comparison to icon-changes.json\n`);
 
       // Show optimization impact
-      const allIcons = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', 'all-icons-data.json'), 'utf-8'));
+      const allIcons = JSON.parse(
+        fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', 'all-icons-data.json'), 'utf-8')
+      );
       const unchangedIcons = allIcons.length - delta.changedIcons.length;
       const variantsSkipped = unchangedIcons * 504;
 
       console.log('💡 Optimization Impact:');
       console.log(`   Total icons: ${allIcons.length}`);
-      console.log(`   Changed: ${delta.changedIcons.length} (${((delta.changedIcons.length / allIcons.length) * 100).toFixed(1)}%)`);
-      console.log(`   Unchanged: ${unchangedIcons} (${((unchangedIcons / allIcons.length) * 100).toFixed(1)}%)`);
+      console.log(
+        `   Changed: ${delta.changedIcons.length} (${((delta.changedIcons.length / allIcons.length) * 100).toFixed(1)}%)`
+      );
+      console.log(
+        `   Unchanged: ${unchangedIcons} (${((unchangedIcons / allIcons.length) * 100).toFixed(1)}%)`
+      );
       console.log(`   Variants to skip: ${variantsSkipped.toLocaleString()}`);
-      console.log(`   Estimated time saved: ~${Math.round(unchangedIcons * 2 / 60)} minutes\n`);
+      console.log(`   Estimated time saved: ~${Math.round((unchangedIcons * 2) / 60)} minutes\n`);
     }
 
     // Show cumulative paths available
@@ -353,7 +371,7 @@ async function main() {
   try {
     execSync('tsx scripts/generate-categories.ts', {
       cwd: path.join(__dirname, '..'),
-      stdio: 'inherit'
+      stdio: 'inherit',
     });
   } catch (error) {
     console.error('Failed to generate categories:', error);
@@ -370,7 +388,7 @@ async function main() {
 
     if (renames.length > 0) {
       console.log(`Found ${renames.length} set renames:\n`);
-      renames.forEach(rename => {
+      renames.forEach((rename) => {
         console.log(`  Set ${rename.setNumber}:`);
         console.log(`    Old: ${rename.oldName}`);
         console.log(`    New: ${rename.newName}`);
@@ -398,7 +416,7 @@ async function main() {
   console.log('Next step: pnpm build');
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.error('Error:', error);
   process.exit(1);
 });

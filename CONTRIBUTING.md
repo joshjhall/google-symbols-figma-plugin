@@ -30,22 +30,26 @@ By participating in this project, you agree to maintain a respectful and inclusi
 1. **Fork the repository** on GitHub
 
 2. **Clone your fork:**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/google-symbols-figma-plugin.git
    cd google-symbols-figma-plugin
    ```
 
 3. **Add upstream remote:**
+
    ```bash
    git remote add upstream https://github.com/your-org/google-symbols-figma-plugin.git
    ```
 
 4. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 5. **Build the plugin:**
+
    ```bash
    pnpm build
    ```
@@ -106,6 +110,7 @@ pnpm format
 We use [Conventional Commits](https://www.conventionalcommits.org/) for clear commit history:
 
 **Format:**
+
 ```
 type(scope): subject
 
@@ -115,6 +120,7 @@ footer (optional)
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -127,6 +133,7 @@ footer (optional)
 - `chore`: Other changes (deps, config)
 
 **Examples:**
+
 ```bash
 git commit -m "feat: add icon search functionality"
 git commit -m "fix(icons): correct variant generation for filled icons"
@@ -154,6 +161,7 @@ Ensure your PR meets these requirements:
 ### Submitting a PR
 
 1. **Push your branch:**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -166,23 +174,29 @@ Ensure your PR meets these requirements:
    - List any breaking changes
 
 3. **PR Template:**
+
    ```markdown
    ## Description
+
    Brief description of the changes
 
    ## Type of Change
+
    - [ ] Bug fix
    - [ ] New feature
    - [ ] Breaking change
    - [ ] Documentation update
 
    ## Testing
+
    Describe how you tested your changes
 
    ## Screenshots (if applicable)
+
    Add screenshots here
 
    ## Related Issues
+
    Closes #123
    ```
 
@@ -264,6 +278,7 @@ console.log('Processing', iconName);
 - Mock external dependencies
 
 **Example:**
+
 ```typescript
 describe('IconGenerator', () => {
   it('should generate icon with correct variants', async () => {
@@ -306,7 +321,7 @@ pnpm test icon-generator
 
 ### Code Comments
 
-```typescript
+````typescript
 /**
  * Generates Material Symbol icons with all variant combinations
  *
@@ -319,17 +334,15 @@ pnpm test icon-generator
  * const icon = await generateIcon('home', { weights: [400, 700] });
  * ```
  */
-export async function generateIcon(
-  iconName: string,
-  options: GenerateOptions
-): Promise<IconData> {
+export async function generateIcon(iconName: string, options: GenerateOptions): Promise<IconData> {
   // implementation
 }
-```
+````
 
 ### README Updates
 
 Update README.md when:
+
 - Adding new features
 - Changing installation/usage steps
 - Updating requirements
@@ -338,6 +351,7 @@ Update README.md when:
 ### Documentation Files
 
 Update docs/ when:
+
 - Changing architecture
 - Adding new workflows
 - Updating processes

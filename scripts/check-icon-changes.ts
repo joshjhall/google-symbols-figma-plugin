@@ -51,10 +51,10 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
   try {
     const response = await fetch(compareUrl, {
       headers: {
-        'Accept': 'application/vnd.github.v3+json',
+        Accept: 'application/vnd.github.v3+json',
         // Optional: Add GitHub token for higher rate limits
         // 'Authorization': `token ${process.env.GITHUB_TOKEN}`
-      }
+      },
     });
 
     if (!response.ok) {
@@ -70,7 +70,7 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
     const filesByStatus = {
       added: [] as string[],
       modified: [] as string[],
-      removed: [] as string[]
+      removed: [] as string[],
     };
 
     for (const file of data.files || []) {
@@ -98,7 +98,7 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
     const allIcons: string[] = JSON.parse(fs.readFileSync(allIconsPath, 'utf-8'));
 
     // Determine which are truly new icons (not in current list)
-    const newIcons = changedIcons.filter(icon => !allIcons.includes(icon));
+    const newIcons = changedIcons.filter((icon) => !allIcons.includes(icon));
 
     // Note: We can't easily detect deleted icons from GitHub compare alone
     // since they won't show up in the new commit's file tree
@@ -113,7 +113,7 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
       deletedIcons,
       totalChanged: changedIcons.length,
       totalIcons: allIcons.length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Display summary
@@ -121,7 +121,9 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
     console.log('ICON CHANGE SUMMARY');
     console.log('═══════════════════════════════════════');
     console.log(`Total icons in repo: ${allIcons.length}`);
-    console.log(`Changed icons: ${changedIcons.length} (${((changedIcons.length / allIcons.length) * 100).toFixed(1)}%)`);
+    console.log(
+      `Changed icons: ${changedIcons.length} (${((changedIcons.length / allIcons.length) * 100).toFixed(1)}%)`
+    );
     console.log(`New icons: ${newIcons.length}`);
     console.log(`Files changed: ${data.files?.length || 0}`);
     console.log(`  - Added: ${filesByStatus.added.length}`);
@@ -131,7 +133,7 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
 
     if (changedIcons.length > 0) {
       console.log('Changed icons:');
-      changedIcons.slice(0, 20).forEach(icon => console.log(`  - ${icon}`));
+      changedIcons.slice(0, 20).forEach((icon) => console.log(`  - ${icon}`));
       if (changedIcons.length > 20) {
         console.log(`  ... and ${changedIcons.length - 20} more\n`);
       }
@@ -139,7 +141,7 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
 
     if (newIcons.length > 0) {
       console.log('\nNew icons:');
-      newIcons.forEach(icon => console.log(`  + ${icon}`));
+      newIcons.forEach((icon) => console.log(`  + ${icon}`));
     }
 
     // Save to file
@@ -153,10 +155,9 @@ async function checkIconChanges(oldCommit: string, newCommit: string): Promise<I
     console.log('\n💡 Optimization Impact:');
     console.log(`   Unchanged icons: ${unchangedIcons}`);
     console.log(`   Variants to skip: ${variantsSkipped.toLocaleString()}`);
-    console.log(`   Estimated time saved: ~${Math.round(unchangedIcons * 2 / 60)} minutes`);
+    console.log(`   Estimated time saved: ~${Math.round((unchangedIcons * 2) / 60)} minutes`);
 
     return result;
-
   } catch (error) {
     console.error('Error checking icon changes:', error);
     throw error;
@@ -172,7 +173,7 @@ if (args.length < 2) {
 }
 
 const [oldCommit, newCommit] = args;
-checkIconChanges(oldCommit, newCommit).catch(error => {
+checkIconChanges(oldCommit, newCommit).catch((error) => {
   console.error('Failed:', error);
   process.exit(1);
 });
