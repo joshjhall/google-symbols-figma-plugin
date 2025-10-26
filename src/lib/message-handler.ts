@@ -4,7 +4,7 @@
 
 import { PLUGIN_MESSAGES, UIMessage } from '@/types';
 // Note: test-generators and icon-generator files were removed - test functions stubbed out
-import { IconListFetcher } from './icons/icon-list-fetcher';
+import { IconListFetcher } from '@lib/icons/icon-list-fetcher';
 
 export class MessageHandler {
   private listFetcher = new IconListFetcher({ token: process.env.GITHUB_TOKEN || '' });

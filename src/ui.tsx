@@ -3,9 +3,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
-import { PLUGIN_MESSAGES, PluginMessage } from './types';
+import { PLUGIN_MESSAGES, PluginMessage } from '@/types';
 // @ts-ignore - JSON import
-import categoriesData from './data/categories-summary.json';
+import categoriesData from '@/data/categories-summary.json';
 
 // Category data structure
 interface Category {
