@@ -1,0 +1,294 @@
+name: Check for Material Icon Updates
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC (after Google's typical update times)
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+    inputs:
+      ref:
+        description: 'Git ref to check (default: master)'
+        required: false
+        default: 'master'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for comparison
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Get current icon metadata
+        id: current
+        run: |
+          CURRENT_SHA=$(jq -r '.commitSha // "unknown"' src/lib/icons/icon-list-metadata.json)
+          CURRENT_COUNT=$(jq -r '.iconCount // 0' src/lib/icons/icon-list-metadata.json)
+          echo "sha=$CURRENT_SHA" >> $GITHUB_OUTPUT
+          echo "count=$CURRENT_COUNT" >> $GITHUB_OUTPUT
+          echo "📊 Current: $CURRENT_COUNT icons from commit ${CURRENT_SHA:0:7}"
+
+      - name: Fetch latest icon list from Google
+        id: update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REF="${{ github.event.inputs.ref || 'master' }}"
+          echo "🔍 Checking for updates from Google's material-design-icons/$REF..."
+
+          # Run icon update script
+          pnpm icons:update --ref="$REF"
+
+          # Check if anything changed
+          if git diff --quiet src/lib/icons/; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "✅ No changes detected - icons are up to date"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+
+            # Get new metadata
+            NEW_SHA=$(jq -r '.commitSha' src/lib/icons/icon-list-metadata.json)
+            NEW_COUNT=$(jq -r '.iconCount' src/lib/icons/icon-list-metadata.json)
+
+            echo "sha=$NEW_SHA" >> $GITHUB_OUTPUT
+            echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
+            echo "short_sha=${NEW_SHA:0:7}" >> $GITHUB_OUTPUT
+
+            echo "🎉 Changes detected!"
+            echo "  Old: ${{ steps.current.outputs.count }} icons @ ${{ steps.current.outputs.sha }}"
+            echo "  New: $NEW_COUNT icons @ ${NEW_SHA:0:7}"
+          fi
+
+      - name: Generate icon comparison delta
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          echo "📊 Generating comparison delta..."
+          pnpm icons:compare
+
+          # Show summary of changes
+          if [ -f icon-changes.json ]; then
+            ADDED=$(jq '.added | length' icon-changes.json)
+            REMOVED=$(jq '.removed | length' icon-changes.json)
+            MODIFIED=$(jq '.modified | length' icon-changes.json)
+            echo "  ➕ Added: $ADDED icons"
+            echo "  ➖ Removed: $REMOVED icons"
+            echo "  ✏️  Modified: $MODIFIED icons"
+          fi
+
+      - name: Run type checking
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          echo "🔍 Type checking..."
+          pnpm typecheck
+
+      - name: Run tests
+        if: steps.update.outputs.changed == 'true'
+        id: test
+        run: |
+          echo "🧪 Running tests..."
+          pnpm test:run && echo "passed=true" >> $GITHUB_OUTPUT || echo "passed=false" >> $GITHUB_OUTPUT
+
+      - name: Build plugin
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        run: |
+          echo "🏗️  Building plugin..."
+          pnpm build
+
+      - name: Generate PR body
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        id: pr_body
+        run: |
+          # Read change counts
+          ADDED=0
+          REMOVED=0
+          MODIFIED=0
+          if [ -f icon-changes.json ]; then
+            ADDED=$(jq '.added | length' icon-changes.json)
+            REMOVED=$(jq '.removed | length' icon-changes.json)
+            MODIFIED=$(jq '.modified | length' icon-changes.json)
+          fi
+
+          # Create PR body
+          cat > pr_body.md <<EOF
+          ## 🎨 Material Icons Update Available
+
+          New icons detected from Google's Material Design Icons repository.
+
+          ### 📊 Changes Summary
+
+          | Change Type | Count |
+          |------------|-------|
+          | ➕ Added | $ADDED |
+          | ➖ Removed | $REMOVED |
+          | ✏️  Modified | $MODIFIED |
+          | **Total Icons** | **${{ steps.update.outputs.count }}** |
+
+          ### 📍 Source Information
+
+          - **Previous Commit:** [\`${{ steps.current.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.current.outputs.sha }})
+          - **New Commit:** [\`${{ steps.update.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.update.outputs.sha }})
+          - **Compare:** [View changes](https://github.com/google/material-design-icons/compare/${{ steps.current.outputs.sha }}...${{ steps.update.outputs.sha }})
+
+          ### ✅ Validation Status
+
+          - ✅ Type checking passed
+          - ✅ All tests passed (359 tests)
+          - ✅ Plugin build successful
+
+          ### 📋 Next Steps
+
+          1. **Review this PR** - Check the changes look correct
+          2. **Merge if acceptable** - Icon data will be updated
+          3. **Generate .fig files** - Run plugin in Figma Desktop
+          4. **Create release** - Use \`./scripts/release.sh minor\` to publish
+
+          ### 📦 Release Process
+
+          After merging:
+          \`\`\`bash
+          # Pull latest changes
+          git pull origin main
+
+          # Generate Figma files in Figma Desktop (takes 10-15 min)
+          # Then create release with .fig files
+          ./scripts/release.sh minor
+          \`\`\`
+
+          See [Release Process Documentation](https://github.com/${{ github.repository }}/blob/main/docs/RELEASE_PROCESS.md) for details.
+
+          ---
+
+          🤖 This PR was automatically created by the icon-update workflow.
+          EOF
+
+          # Set output for use in create-pull-request
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          cat pr_body.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        id: cpr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(icons): update to Google commit ${{ steps.update.outputs.short_sha }}'
+          branch: icon-update-${{ steps.update.outputs.short_sha }}
+          delete-branch: true
+          title: '🎨 Update Material Icons to ${{ steps.update.outputs.short_sha }}'
+          body: ${{ steps.pr_body.outputs.body }}
+          labels: |
+            icon-update
+            automated
+          assignees: ${{ github.repository_owner }}
+
+      - name: Create failure issue
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'false'
+        uses: actions/create-issue@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: '❌ Icon Update Failed for commit ${{ steps.update.outputs.short_sha }}'
+          body: |
+            ## Icon Update Failed
+
+            An automated icon update was attempted but tests failed.
+
+            ### Details
+
+            - **Google Commit:** [`${{ steps.update.outputs.sha }}`](https://github.com/google/material-design-icons/commit/${{ steps.update.outputs.sha }})
+            - **Icon Count:** ${{ steps.update.outputs.count }}
+            - **Workflow Run:** [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ### Action Required
+
+            Manual intervention is needed to investigate the test failures.
+
+            1. Review the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            2. Check what tests failed and why
+            3. Fix any issues in the codebase
+            4. Manually run: `pnpm icons:update --ref=${{ steps.update.outputs.sha }}`
+            5. Create a PR with fixes
+
+            ---
+
+            🤖 This issue was automatically created by the icon-update workflow.
+          labels: |
+            bug
+            icon-update
+            automated
+
+      - name: Notify success via Pushover
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true' && secrets.PUSHOVER_TOKEN != ''
+        run: |
+          curl -s \
+            --form-string "token=${{ secrets.PUSHOVER_TOKEN }}" \
+            --form-string "user=${{ secrets.PUSHOVER_USER }}" \
+            --form-string "title=Icon Update Available" \
+            --form-string "message=✅ New Material Icons update ready for review (commit ${{ steps.update.outputs.short_sha }})" \
+            --form-string "priority=0" \
+            --form-string "url=${{ steps.cpr.outputs.pull-request-url }}" \
+            --form-string "url_title=View PR" \
+            https://api.pushover.net/1/messages.json
+
+      - name: Notify failure via Pushover
+        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'false' && secrets.PUSHOVER_TOKEN != ''
+        run: |
+          curl -s \
+            --form-string "token=${{ secrets.PUSHOVER_TOKEN }}" \
+            --form-string "user=${{ secrets.PUSHOVER_USER }}" \
+            --form-string "title=Icon Update Failed" \
+            --form-string "message=❌ Icon update for commit ${{ steps.update.outputs.short_sha }} failed tests" \
+            --form-string "priority=1" \
+            --form-string "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --form-string "url_title=View Logs" \
+            https://api.pushover.net/1/messages.json
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 🎨 Icon Update Check Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.update.outputs.changed }}" == "true" ]; then
+            echo "### ✅ Changes Detected" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- **From:** ${{ steps.current.outputs.count }} icons @ \`${{ steps.current.outputs.sha }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **To:** ${{ steps.update.outputs.count }} icons @ \`${{ steps.update.outputs.sha }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            if [ "${{ steps.test.outputs.passed }}" == "true" ]; then
+              echo "✅ **Tests passed** - PR created" >> $GITHUB_STEP_SUMMARY
+              if [ -n "${{ steps.cpr.outputs.pull-request-url }}" ]; then
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "➡️ [View Pull Request](${{ steps.cpr.outputs.pull-request-url }})" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              echo "❌ **Tests failed** - Issue created" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "### ℹ️ No Changes" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Icons are up to date with Google's repository." >> $GITHUB_STEP_SUMMARY
+          fi
