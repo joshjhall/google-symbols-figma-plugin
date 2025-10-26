@@ -8,6 +8,7 @@ services:
         PROJECT_NAME: google-symbols-figma-plugin
         USERNAME: vscode
         WORKING_DIR: /workspace/google-symbols-figma-plugin
+        INCLUDE_OP: 'true'
         INCLUDE_NODE_DEV: 'true'
         INCLUDE_DEV_TOOLS: 'true'
       cache_from:
