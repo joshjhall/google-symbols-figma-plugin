@@ -5,11 +5,20 @@
 import { PLUGIN_MESSAGES, UIMessage } from '@/types';
 // Note: test-generators and icon-generator files were removed - test functions stubbed out
 import { IconListFetcher } from '@lib/icons/icon-list-fetcher';
+import { TokenManager } from './config/token-manager';
 
 export class MessageHandler {
-  private listFetcher = new IconListFetcher({
-    token: process.env.GITHUB_TOKEN || '',
-  });
+  private listFetcher?: IconListFetcher;
+
+  /**
+   * Ensure IconListFetcher is initialized with token from secure source
+   */
+  private async ensureInitialized(): Promise<void> {
+    if (!this.listFetcher) {
+      const token = await TokenManager.getVersionCheckToken();
+      this.listFetcher = new IconListFetcher({ token });
+    }
+  }
 
   async handleMessage(msg: UIMessage): Promise<void> {
     switch (msg.type) {
