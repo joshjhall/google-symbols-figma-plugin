@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.0.0...v1.0.1) (2025-10-26)
+
+### Bug Fixes
+
+- **ci:** correct Pushover notification secret checks in workflow ([4393784](https://github.com/joshjhall/google-symbols-figma-plugin/commit/4393784aa591ec226d0b1a9cd0f91277699fdd5a))
+
 # 1.0.0 (2025-10-26)
 
 ### Bug Fixes
