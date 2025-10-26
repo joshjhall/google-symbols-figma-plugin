@@ -162,8 +162,8 @@ name: Update Material Icons
 
 on:
   schedule:
-    - cron: '0 0 * * 0'  # Weekly on Sunday
-  workflow_dispatch:  # Manual trigger
+    - cron: '0 0 * * 0' # Weekly on Sunday
+  workflow_dispatch: # Manual trigger
 
 jobs:
   update:
@@ -260,21 +260,21 @@ If you skip Step 2, the plugin will still work but will:
 
 **Scenario: Google adds 5 new icons, modifies 122 existing**
 
-| Method | Icons Processed | Variants Downloaded | Time |
-|--------|----------------|-------------------|------|
-| **With icon-changes.json** | 127 changed | ~64,000 | ~10-15 min |
-| **Without icon-changes.json** | 3933 all | ~2,000,000 | ~3-4 hours |
-| **Savings** | **97% fewer** | **97% fewer** | **92% faster** |
+| Method                        | Icons Processed | Variants Downloaded | Time           |
+| ----------------------------- | --------------- | ------------------- | -------------- |
+| **With icon-changes.json**    | 127 changed     | ~64,000             | ~10-15 min     |
+| **Without icon-changes.json** | 3933 all        | ~2,000,000          | ~3-4 hours     |
+| **Savings**                   | **97% fewer**   | **97% fewer**       | **92% faster** |
 
 ## Files Generated
 
-| File | Purpose | When Generated |
-|------|---------|---------------|
-| `icon-list-metadata.json` | Commit SHA, icon count, timestamp | Step 1: update-icon-list |
-| `src/lib/all-icons-data.json` | Complete icon list | Step 1: update-icon-list |
-| `icon-changes.json` | Changed icons delta | Step 2: check-icon-changes |
-| `category-mapping.json` | Icon → Set mapping | Step 3: generate-categories |
-| `categories-summary.json` | Set metadata | Step 3: generate-categories |
+| File                          | Purpose                           | When Generated              |
+| ----------------------------- | --------------------------------- | --------------------------- |
+| `icon-list-metadata.json`     | Commit SHA, icon count, timestamp | Step 1: update-icon-list    |
+| `src/lib/all-icons-data.json` | Complete icon list                | Step 1: update-icon-list    |
+| `icon-changes.json`           | Changed icons delta               | Step 2: check-icon-changes  |
+| `category-mapping.json`       | Icon → Set mapping                | Step 3: generate-categories |
+| `categories-summary.json`     | Set metadata                      | Step 3: generate-categories |
 
 ## Git Workflow
 
