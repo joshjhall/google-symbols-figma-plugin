@@ -1,3 +1,21 @@
+# 1.0.0 (2025-10-26)
+
+### Bug Fixes
+
+- **ci:** disable body-max-line-length in commitlint ([ae89d70](https://github.com/joshjhall/google-symbols-figma-plugin/commit/ae89d7043d2a479642d30fd0b92ea357eaba4d95))
+- **deps:** upgrade vitest to v3.2.4 to match coverage package ([a521b18](https://github.com/joshjhall/google-symbols-figma-plugin/commit/a521b18815d6bbfb260dd213220893d74af25e04))
+- remove deprecated Husky v9 initialization lines ([e8c13af](https://github.com/joshjhall/google-symbols-figma-plugin/commit/e8c13afb63fd1255a767741e859ea7ab849548df))
+- remove unused existingCategories variable ([e6f43cb](https://github.com/joshjhall/google-symbols-figma-plugin/commit/e6f43cb16a7531b5b076d752381af56267a478c8))
+- resolve TypeScript errors and improve type safety ([588a868](https://github.com/joshjhall/google-symbols-figma-plugin/commit/588a868837bfd517a356c3c90828abd68bb1370d))
+- **security:** remove hardcoded GitHub token from source code ([7a5efb7](https://github.com/joshjhall/google-symbols-figma-plugin/commit/7a5efb7ba1e8bd9c9265cc9e8fec4a6c9b98b598))
+- **test:** adjust coverage exclusions to focus on unit-testable code ([e911035](https://github.com/joshjhall/google-symbols-figma-plugin/commit/e9110357f62bc381830a1209f9fc00fc9bf11591))
+- **test:** make elapsed time test more resilient to CI timing ([e9e50c9](https://github.com/joshjhall/google-symbols-figma-plugin/commit/e9e50c93126ef677c8f899b80c360ae03a746f66))
+
+### Features
+
+- add Figma plugin source code ([fcda211](https://github.com/joshjhall/google-symbols-figma-plugin/commit/fcda2113dc830b946a7fa2b35484ca1bab9f98e4))
+- **devcontainer:** add 1Password integration support ([84b246d](https://github.com/joshjhall/google-symbols-figma-plugin/commit/84b246db62ee9c0c8275561e4f1d5c7d756d4dba))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
