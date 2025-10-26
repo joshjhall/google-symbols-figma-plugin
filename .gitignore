@@ -67,6 +67,8 @@ Thumbs.db
 # Figma plugin specific
 fonts/
 *.fig
+# Release directory contains pre-generated .fig files (uploaded as GitHub Release assets)
+release/
 
 # Other
 .npm
