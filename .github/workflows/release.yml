@@ -8,15 +8,9 @@ name: Release
 # 2. Generate .fig files in Figma Desktop (~10-15 min)
 # 3. Run: ./scripts/release.sh minor
 # 4. Script creates release with all .fig files attached
-#
-# To re-enable automated releases (without .fig files):
-# - Uncomment the 'on:' trigger below
-# - Uncomment the 'jobs' section
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  workflow_dispatch: # Manual trigger only - keeps workflow valid but disabled
 
 permissions:
   contents: write
