@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2025-10-15T02:51:03.421Z",
+  "generatedAt": "2025-10-26T20:52:34.377Z",
   "ref": "master",
   "commitSha": "bb04090f930e272697f2a1f0d7b352d92dfeee43",
   "source": "repo-directories",
   "totalIconDirectories": 3933,
   "validIcons": 3933,
   "invalidIcons": 0,
-  "skipVerify": true,
-  "successRate": "N/A"
+  "skipVerify": false,
+  "successRate": "100%"
 }
