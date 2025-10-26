@@ -1,7 +1,6 @@
 # Google Material Symbols Figma Plugin
 
 [![CI](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/ci.yml)
-[![Release](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/release.yml/badge.svg)](https://github.com/joshjhall/google-symbols-figma-plugin/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 A Figma plugin for generating and maintaining a complete Google Material Symbols library. Automatically syncs with Google's official Material Design Icons repository and generates SVG-based Figma components with comprehensive variant support.
