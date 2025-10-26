@@ -94,7 +94,8 @@ export class TokenManager {
     // No token found
     throw new Error(
       `${config.name} not found. Tried:\n` +
-        `  1. 1Password vault item: "${config.opVaultItem}"\n` +
+        `  1. 1Password vault item: "${config.opVaultItem}" in vaults: Development, Private, Personal\n` +
+        `     (Set OP_VAULT env var to specify a different vault)\n` +
         `  2. Environment variable: ${config.envVar}\n` +
         `  3. .env file: ${config.envVar}\n\n` +
         `Please set up token using one of these methods.\n` +
@@ -119,16 +120,28 @@ export class TokenManager {
       }
 
       // Try to read from 1Password
-      // Format: op://Private/<item-name>/credential
-      const command = `op read "op://Private/${config.opVaultItem}/credential"`;
-      const token = execSync(command, {
-        encoding: 'utf-8',
-        stdio: ['pipe', 'pipe', 'ignore'], // Suppress stderr
-        timeout: 5000, // 5 second timeout
-      }).trim();
+      // Try multiple vault names: environment variable, then common defaults
+      const vaultNames = [process.env.OP_VAULT || '', 'Development', 'Private', 'Personal'].filter(
+        (v) => v.length > 0
+      );
 
-      if (token && token.startsWith('ghp_')) {
-        return token;
+      for (const vault of vaultNames) {
+        try {
+          // Use 'op item get' instead of 'op read' because item names contain parentheses
+          const command = `op item get "${config.opVaultItem}" --vault ${vault} --fields credential --reveal`;
+          const token = execSync(command, {
+            encoding: 'utf-8',
+            stdio: ['pipe', 'pipe', 'ignore'], // Suppress stderr
+            timeout: 5000, // 5 second timeout
+          }).trim();
+
+          if (token && (token.startsWith('ghp_') || token.startsWith('github_pat_'))) {
+            return token;
+          }
+        } catch {
+          // Try next vault
+          continue;
+        }
       }
 
       return null;
@@ -146,7 +159,7 @@ export class TokenManager {
    */
   private static tryEnvironment(config: TokenConfig): string | null {
     const token = process.env[config.envVar];
-    if (token && token.startsWith('ghp_')) {
+    if (token && (token.startsWith('ghp_') || token.startsWith('github_pat_'))) {
       return token;
     }
     return null;
