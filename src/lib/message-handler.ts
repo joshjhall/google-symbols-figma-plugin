@@ -7,7 +7,9 @@ import { PLUGIN_MESSAGES, UIMessage } from '@/types';
 import { IconListFetcher } from '@lib/icons/icon-list-fetcher';
 
 export class MessageHandler {
-  private listFetcher = new IconListFetcher({ token: process.env.GITHUB_TOKEN || '' });
+  private listFetcher = new IconListFetcher({
+    token: process.env.GITHUB_TOKEN || '',
+  });
 
   async handleMessage(msg: UIMessage): Promise<void> {
     switch (msg.type) {

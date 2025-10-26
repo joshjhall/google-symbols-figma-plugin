@@ -62,6 +62,9 @@ importers:
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       esbuild:
         specifier: ^0.23.0
         version: 0.23.1
@@ -2471,6 +2474,13 @@ packages:
         integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==,
       }
     engines: { node: '>=8' }
+
+  dotenv@17.2.3:
+    resolution:
+      {
+        integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==,
+      }
+    engines: { node: '>=12' }
 
   duplexer2@0.1.4:
     resolution:
@@ -6971,6 +6981,8 @@ snapshots:
   dot-prop@5.3.0:
     dependencies:
       is-obj: 2.0.0
+
+  dotenv@17.2.3: {}
 
   duplexer2@0.1.4:
     dependencies:
