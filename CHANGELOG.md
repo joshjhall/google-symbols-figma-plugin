@@ -1,3 +1,23 @@
+## [1.2.0](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.1.0...v1.2.0) (2025-10-26)
+
+### Features
+
+- add 1Password token integration to release script
+- add secure token management with 1Password integration
+
+### Bug Fixes
+
+- remove TokenManager from plugin runtime code
+- support fine-grained tokens and multiple vaults in TokenManager
+
+### Documentation
+
+- add comprehensive project analysis
+
+### Maintenance
+
+- update icon list metadata and verified icon list
+
 ## [1.1.0](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.0.1...v1.1.0) (2025-10-26)
 
 ### Features
