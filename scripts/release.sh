@@ -25,6 +25,34 @@ fi
 
 echo "🚀 Creating $VERSION_TYPE release..."
 
+# Get GitHub token from 1Password for release operations
+echo "🔐 Loading GitHub token from 1Password..."
+TOKEN=""
+VAULTS=("${OP_VAULT:-}" "Development" "Private" "Personal")
+
+for vault in "${VAULTS[@]}"; do
+  [[ -z "$vault" ]] && continue
+  TOKEN=$(op item get "GitHub (Figma icon plugin releases)" --vault "$vault" --fields credential --reveal 2>/dev/null || echo "")
+  if [[ -n "$TOKEN" ]]; then
+    echo "✓ Token loaded from 1Password vault: $vault"
+    export GH_TOKEN="$TOKEN"
+    break
+  fi
+done
+
+if [[ -z "$TOKEN" ]]; then
+  echo "❌ Error: Could not load GitHub release token from 1Password"
+  echo "Tried vaults: ${VAULTS[*]}"
+  echo ""
+  echo "Please ensure:"
+  echo "  1. 1Password CLI is installed and authenticated (op signin)"
+  echo "  2. Token exists in 1Password: 'GitHub (Figma icon plugin releases)'"
+  echo "  3. Token has 'repo' scope for creating releases"
+  echo ""
+  echo "See docs/github-token-setup.md for setup instructions"
+  exit 1
+fi
+
 # Ensure we're on main branch
 CURRENT_BRANCH=$(git branch --show-current)
 if [ "$CURRENT_BRANCH" != "main" ]; then
