@@ -25,3 +25,21 @@ export const PLUGIN_DATA_KEYS = {
  * 3 styles × 7 weights × 2 fills × 3 grades × 4 optical sizes = 504
  */
 export const EXPECTED_VARIANT_COUNT = 504;
+
+/**
+ * Feature Flags
+ */
+export const FEATURE_FLAGS = {
+  /**
+   * Enable cleanup of unnecessary variant property definitions
+   *
+   * When enabled, the plugin will scan all ComponentSets and remove unnecessary
+   * component property definitions from individual variants. This fixes "hidden fill"
+   * and other unnecessary properties that appear on variants when they're added to
+   * ComponentSets after initial creation.
+   *
+   * Set to true to enable cleanup, false to disable.
+   * Can be disabled once existing components have been cleaned up.
+   */
+  ENABLE_VARIANT_CLEANUP: true,
+} as const;

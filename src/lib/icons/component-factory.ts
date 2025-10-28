@@ -77,6 +77,7 @@
 import { logger, hashSvg } from '@lib/utils';
 import { PLUGIN_DATA_KEYS } from '@lib/constants';
 import { getVariantName } from './variant-formatter';
+import { cleanupVariantFills } from './variant-utils';
 import type { VariantData } from './generator';
 
 /**
@@ -253,6 +254,9 @@ export async function createVariantComponent(
         const hash = hashSvg(variantData.svgContent);
         setStoredHash(component, hash);
 
+        // Clean up any unnecessary fills from the component frame
+        cleanupVariantFills(component);
+
         return component;
       }
     }
@@ -349,6 +353,9 @@ export async function updateVariantComponent(
       // Store the new content hash
       const hash = hashSvg(variantData.svgContent);
       setStoredHash(component, hash);
+
+      // Clean up any unnecessary fills from the component frame
+      cleanupVariantFills(component);
     }
   }
 }

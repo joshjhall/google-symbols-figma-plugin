@@ -59,7 +59,7 @@ import { logger } from '@lib/utils';
 import type { IconGenerator, VariantData } from '@lib/icons';
 import { generateGitHubUrl, type IconVariant, type IconStyle } from '@lib/github';
 import { batchFetchSVGs } from '@lib/icons';
-import { PLUGIN_DATA_KEYS } from '@lib/constants';
+import { PLUGIN_DATA_KEYS, FEATURE_FLAGS } from '@lib/constants';
 import { checkIconNeedsUpdate, logUpdateCheckResult } from '@lib/icons/metadata-helpers';
 import {
   analyzeComponentForUpdate,
@@ -68,6 +68,7 @@ import {
   reorderComponentSetVariants,
   getUpdateSummary,
   cleanupExtraFramesInComponentSet,
+  cleanupVariantFillsInComponentSet,
   type VariantKey,
 } from '@lib/icons/incremental-updater';
 import { hasIconChangedCumulatively } from '../cumulative-changes';
@@ -285,6 +286,15 @@ export class IconProcessor {
       const fixedFrames = cleanupExtraFramesInComponentSet(existingComponentSet);
       if (fixedFrames > 0) {
         logger.info(`Cleaned up ${fixedFrames} variants with extra frames in ${iconName}`);
+      }
+    }
+
+    // Clean up unnecessary fills from variant frames BEFORE skip check
+    // This ensures cleanup runs even on unchanged icons with 504 variants
+    if (existingComponentSet && FEATURE_FLAGS.ENABLE_VARIANT_CLEANUP) {
+      const cleanedCount = cleanupVariantFillsInComponentSet(existingComponentSet);
+      if (cleanedCount > 0) {
+        logger.info(`Cleaned up fills on ${cleanedCount} variant frame(s) in ${iconName}`);
       }
     }
 

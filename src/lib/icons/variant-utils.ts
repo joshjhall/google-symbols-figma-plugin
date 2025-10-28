@@ -388,3 +388,48 @@ export function getIdealDefaultVariantName(availableStyles: string[]): string {
     opticalSize: VARIANT_PREFERENCES.opticalSize[0],
   });
 }
+
+/**
+ * Clean up unnecessary fills from variant component frames
+ *
+ * When variants are created from SVG, the component frame sometimes retains
+ * a white fill (#FFFFFF) that should be removed. This adds unnecessary weight
+ * to the Figma file, especially problematic with 100k+ variants.
+ *
+ * This function removes any fills from variant component frames, ensuring they
+ * have no background (icons should only have vector content, no frame fills).
+ *
+ * @param {ComponentNode} component - The variant component to clean up
+ * @returns {boolean} True if fills were removed, false if component already had no fills
+ *
+ * @example
+ * ```typescript
+ * const component = figma.createComponent();
+ * // ... create variant from SVG ...
+ *
+ * // Clean up any unnecessary fills
+ * const cleaned = cleanupVariantFills(component);
+ * if (cleaned) {
+ *   logger.info('Removed unnecessary fills from variant frame');
+ * }
+ * ```
+ */
+export function cleanupVariantFills(component: ComponentNode): boolean {
+  try {
+    // Check if component has any fills
+    if (component.fills && (component.fills as readonly Paint[]).length > 0) {
+      const fillCount = (component.fills as readonly Paint[]).length;
+      logger.debug(`Removing ${fillCount} fill(s) from variant frame: ${component.name}`);
+
+      // Remove all fills from the component frame
+      component.fills = [];
+
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    logger.warn(`Error during fill cleanup for ${component.name}: ${error}`);
+    return false;
+  }
+}

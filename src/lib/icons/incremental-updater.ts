@@ -14,6 +14,7 @@
 
 import { logger } from '@lib/utils';
 import type { IconStyle, IconVariant } from '@lib/github';
+import { cleanupVariantFills } from './variant-utils';
 
 /**
  * Unique identifier for an icon variant
@@ -508,12 +509,18 @@ export async function updateVariantComponent(
     const size = variantKey.variant.opticalSize;
     component.resize(size, size);
 
+    // Remove any fills from the component frame itself (icons should have no background)
+    component.fills = [];
+
     // Update description with timestamp
     const timestamp = new Date().toISOString();
     component.description = `Last updated: ${timestamp}\nStyle: ${variantKey.style}, Weight: ${variantKey.variant.weight}, Fill: ${variantKey.variant.fill}, Grade: ${variantKey.variant.grade}, Size: ${variantKey.variant.opticalSize}`;
 
     // Store SVG hash for future comparisons
     setComponentSvgHash(component, svgContent);
+
+    // Clean up any unnecessary fills from the component frame
+    cleanupVariantFills(component);
 
     logger.info(`✓ Updated variant: ${component.name}`);
   } catch (error) {
@@ -595,6 +602,10 @@ export async function addVariantToComponentSet(
     // Add to component set - Figma will automatically set variantProperties based on the name
     componentSet.appendChild(component);
 
+    // Clean up any unnecessary fills from the component frame
+    // This prevents "hidden fill" (#FFFFFF) that adds file weight
+    cleanupVariantFills(component);
+
     logger.info(`✓ Added new variant to ${componentSet.name}`);
 
     return component;
@@ -669,6 +680,205 @@ export function cleanupExtraFramesInComponentSet(componentSet: ComponentSetNode)
   }
 
   return fixedCount;
+}
+
+/**
+ * Diagnostic function to inspect ComponentSet and variant properties
+ *
+ * Logs detailed information about what properties exist on the ComponentSet
+ * and its variants to help debug property issues.
+ */
+export function diagnoseComponentSetProperties(componentSet: ComponentSetNode): void {
+  logger.info(`\n🔍 DIAGNOSTIC: ${componentSet.name}`);
+  logger.info(`=====================================`);
+
+  // Check ComponentSet level properties
+  if ('variantGroupProperties' in componentSet) {
+    logger.info(`📦 ComponentSet.variantGroupProperties:`);
+    try {
+      const vgp = (componentSet as any).variantGroupProperties;
+      if (vgp) {
+        Object.keys(vgp).forEach((key) => {
+          logger.info(`   ${key}: ${JSON.stringify(vgp[key])}`);
+        });
+      } else {
+        logger.info(`   (none)`);
+      }
+    } catch (e) {
+      logger.warn(`   Error reading variantGroupProperties: ${e}`);
+    }
+  }
+
+  if ('componentPropertyDefinitions' in componentSet) {
+    logger.info(`📦 ComponentSet.componentPropertyDefinitions:`);
+    try {
+      const cpd = componentSet.componentPropertyDefinitions;
+      if (cpd && Object.keys(cpd).length > 0) {
+        Object.keys(cpd).forEach((key) => {
+          logger.info(`   ${key}: ${JSON.stringify(cpd[key])}`);
+        });
+      } else {
+        logger.info(`   (none)`);
+      }
+    } catch (e) {
+      logger.warn(`   Error reading componentPropertyDefinitions: ${e}`);
+    }
+  }
+
+  // Check first few variants
+  logger.info(`\n📋 Sample Variants (first 3):`);
+  const variants = (componentSet.children as ComponentNode[]).slice(0, 3);
+
+  variants.forEach((variant, idx) => {
+    logger.info(`\n   Variant ${idx + 1}: ${variant.name}`);
+
+    if ('componentPropertyDefinitions' in variant) {
+      const cpd = variant.componentPropertyDefinitions;
+      if (cpd && Object.keys(cpd).length > 0) {
+        logger.info(`   ⚠️  componentPropertyDefinitions (SHOULD BE EMPTY):`);
+        Object.keys(cpd).forEach((key) => {
+          logger.info(`      ${key}: ${JSON.stringify(cpd[key])}`);
+        });
+      } else {
+        logger.info(`   ✅ componentPropertyDefinitions: (empty - correct)`);
+      }
+    }
+
+    if ('variantProperties' in variant) {
+      const vp = variant.variantProperties;
+      if (vp && Object.keys(vp).length > 0) {
+        logger.info(`   ✅ variantProperties (values):`);
+        Object.keys(vp).forEach((key) => {
+          logger.info(`      ${key}: ${vp[key]}`);
+        });
+      }
+    }
+  });
+
+  logger.info(`\n=====================================\n`);
+}
+
+/**
+ * Clean up unnecessary fills from all variants in a ComponentSet
+ *
+ * When variants are created from SVG, component frames sometimes retain
+ * unnecessary fills (typically white #FFFFFF backgrounds). This adds weight
+ * to the Figma file, which is problematic with 100k+ variants.
+ *
+ * This function scans all variants in a ComponentSet and removes any fills
+ * from the component frames, ensuring they have no background.
+ *
+ * @param {ComponentSetNode} componentSet - The component set to clean up
+ * @returns {number} Number of variants that had fills removed
+ *
+ * @example
+ * ```typescript
+ * const componentSet = page.findOne(n => n.type === 'COMPONENT_SET');
+ * if (componentSet) {
+ *   const cleanedCount = cleanupVariantFillsInComponentSet(componentSet);
+ *   logger.info(`Cleaned up ${cleanedCount} variants`);
+ * }
+ * ```
+ */
+export function cleanupVariantFillsInComponentSet(componentSet: ComponentSetNode): number {
+  let cleanedCount = 0;
+
+  for (const child of componentSet.children) {
+    if (child.type === 'COMPONENT') {
+      if (cleanupVariantFills(child as ComponentNode)) {
+        cleanedCount++;
+      }
+    }
+  }
+
+  if (cleanedCount > 0) {
+    logger.info(`Cleaned up fills on ${cleanedCount} variant(s) in ${componentSet.name}`);
+  }
+
+  return cleanedCount;
+}
+
+/**
+ * Scan all ComponentSets on a page and clean up variant fills
+ *
+ * This is a lightweight operation that quickly scans all icon ComponentSets and removes
+ * unnecessary fills from variant component frames. It runs on all variants regardless
+ * of whether the component has been changed since the current git SHA.
+ *
+ * Removes white (#FFFFFF) and other background fills from variant frames, reducing
+ * file size and memory usage for files with 100k+ variants.
+ *
+ * @param {PageNode} page - The page to scan
+ * @param {boolean} enableCleanup - Feature flag to enable/disable cleanup (defaults to false)
+ * @returns {object} Cleanup statistics
+ *
+ * @example
+ * ```typescript
+ * const page = figma.currentPage;
+ * const stats = await scanAndCleanupVariantFills(page, true);
+ * logger.info(`Scanned ${stats.componentSetsScanned} sets, cleaned ${stats.variantsCleanedTotal}`);
+ * ```
+ */
+export async function scanAndCleanupVariantFills(
+  page: PageNode,
+  enableCleanup = false
+): Promise<{
+  componentSetsScanned: number;
+  variantsCleanedTotal: number;
+  componentSetsWithIssues: number;
+}> {
+  if (!enableCleanup) {
+    logger.info('Variant fill cleanup is disabled (feature flag: ENABLE_VARIANT_CLEANUP)');
+    return {
+      componentSetsScanned: 0,
+      variantsCleanedTotal: 0,
+      componentSetsWithIssues: 0,
+    };
+  }
+
+  logger.info('Scanning page for variant fill issues...');
+
+  let componentSetsScanned = 0;
+  let variantsCleanedTotal = 0;
+  let componentSetsWithIssues = 0;
+
+  // Find all ComponentSets on the page
+  const componentSets: ComponentSetNode[] = [];
+
+  function findComponentSets(node: SceneNode) {
+    if (node.type === 'COMPONENT_SET') {
+      componentSets.push(node);
+    } else if ('children' in node) {
+      for (const child of node.children) {
+        findComponentSets(child);
+      }
+    }
+  }
+
+  for (const child of page.children) {
+    findComponentSets(child);
+  }
+
+  // Clean up each ComponentSet
+  for (const componentSet of componentSets) {
+    componentSetsScanned++;
+    const cleanedCount = cleanupVariantFillsInComponentSet(componentSet);
+    if (cleanedCount > 0) {
+      componentSetsWithIssues++;
+      variantsCleanedTotal += cleanedCount;
+    }
+  }
+
+  logger.info(
+    `Cleanup complete: Scanned ${componentSetsScanned} component sets, ` +
+      `cleaned ${variantsCleanedTotal} variants in ${componentSetsWithIssues} sets`
+  );
+
+  return {
+    componentSetsScanned,
+    variantsCleanedTotal,
+    componentSetsWithIssues,
+  };
 }
 
 /**
