@@ -94,14 +94,7 @@ echo "📦 Bumping version ($VERSION_TYPE)..."
 NEW_VERSION=$(npm version $VERSION_TYPE --no-git-tag-version)
 VERSION_NUM="${NEW_VERSION#v}"  # Remove 'v' prefix
 
-# Update manifest.json version
-echo "📝 Updating manifest.json..."
-node -e "
-const fs = require('fs');
-const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
-manifest.version = '$VERSION_NUM';
-fs.writeFileSync('manifest.json', JSON.stringify(manifest, null, 2) + '\n');
-"
+# Note: manifest.json does not include version field per Figma schema requirements
 
 # Update CHANGELOG.md
 echo "📝 Updating CHANGELOG.md..."
@@ -199,13 +192,13 @@ else
 fi
 
 # Stage changes
-git add package.json manifest.json CHANGELOG.md
+git add package.json CHANGELOG.md
 
 # Commit
 echo "💾 Creating release commit..."
 git commit -m "chore(release): $VERSION_NUM
 
-- Updated package.json and manifest.json to $VERSION_NUM
+- Updated package.json to $VERSION_NUM
 - Updated CHANGELOG.md with release notes
 - Rebuilt plugin artifacts"
 
