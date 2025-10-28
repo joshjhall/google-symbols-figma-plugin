@@ -25,6 +25,14 @@ fi
 
 echo "🚀 Creating $VERSION_TYPE release..."
 
+# Load environment variables from .env if it exists
+if [[ -f ".env" ]]; then
+  echo "📄 Loading .env file..."
+  set -a
+  source .env
+  set +a
+fi
+
 # Get GitHub token from 1Password for release operations
 echo "🔐 Loading GitHub token from 1Password..."
 TOKEN=""
