@@ -1,3 +1,18 @@
+## [1.2.2](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.2.1...v1.2.2) (2025-10-28)
+
+### Features
+
+- add variant fill cleanup to prevent unnecessary fills
+
+### Bug Fixes
+
+- remove version field from manifest.json
+
+### Maintenance
+
+- update devcontainer configuration
+- remove unused release workflow and badge
+
 ## [1.2.1](https://github.com/joshjhall/google-symbols-figma-plugin/compare/v1.2.0...v1.2.1) (2025-10-26)
 
 ### Bug Fixes
