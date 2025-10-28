@@ -5,13 +5,14 @@
  * Tests variant parsing, default selection logic, and intelligent fallback.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   VARIANT_PREFERENCES,
   parseVariantName,
   findBestDefaultVariant,
   buildVariantName,
   getIdealDefaultVariantName,
+  cleanupVariantFills,
 } from '../variant-utils';
 
 // Mock logger to suppress output during tests
@@ -494,5 +495,125 @@ describe('Integration: parse and build', () => {
       const parsed = parseVariantName(built);
       expect(parsed).toEqual(combo);
     });
+  });
+});
+
+describe('cleanupVariantFills', () => {
+  // Create a mock component node with configurable fills
+  function createMockComponent(hasFills = false): ComponentNode {
+    const fills: readonly Paint[] = hasFills
+      ? [
+          { type: 'SOLID', color: { r: 1, g: 1, b: 1 }, visible: false, opacity: 1 },
+          { type: 'SOLID', color: { r: 0.5, g: 0.5, b: 0.5 }, visible: false, opacity: 0.5 },
+        ]
+      : [];
+
+    return {
+      type: 'COMPONENT',
+      name: 'Style=Rounded, Weight=400, Fill=Off, Grade=Normal, Optical size=24dp',
+      fills,
+    } as ComponentNode;
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should return false when component has no fills', () => {
+    const component = createMockComponent(false);
+    const result = cleanupVariantFills(component);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true when component has fills', () => {
+    const component = createMockComponent(true);
+    const result = cleanupVariantFills(component);
+
+    expect(result).toBe(true);
+  });
+
+  it('should remove all fills from component', () => {
+    const component = createMockComponent(true);
+
+    expect((component.fills as readonly Paint[]).length).toBe(2);
+
+    cleanupVariantFills(component);
+
+    expect((component.fills as readonly Paint[]).length).toBe(0);
+  });
+
+  it('should handle component without fills property', () => {
+    const component = {
+      type: 'COMPONENT',
+      name: 'Style=Rounded, Weight=400, Fill=Off, Grade=Normal, Optical size=24dp',
+    } as unknown as ComponentNode;
+
+    const result = cleanupVariantFills(component);
+
+    expect(result).toBe(false);
+  });
+
+  it('should handle errors gracefully', () => {
+    const component = {
+      type: 'COMPONENT',
+      name: 'Style=Rounded, Weight=400, Fill=Off, Grade=Normal, Optical size=24dp',
+      get fills() {
+        throw new Error('Access denied');
+      },
+    } as unknown as ComponentNode;
+
+    const result = cleanupVariantFills(component);
+
+    expect(result).toBe(false);
+  });
+
+  it('should remove multiple fills', () => {
+    const component = {
+      type: 'COMPONENT',
+      name: 'Style=Rounded, Weight=400, Fill=Off, Grade=Normal, Optical size=24dp',
+      fills: [
+        { type: 'SOLID', color: { r: 1, g: 1, b: 1 }, visible: false },
+        { type: 'SOLID', color: { r: 0, g: 0, b: 0 }, visible: false },
+        { type: 'SOLID', color: { r: 0.5, g: 0.5, b: 0.5 }, visible: true },
+        { type: 'GRADIENT_LINEAR', gradientStops: [], visible: false },
+        { type: 'IMAGE', scaleMode: 'FILL', visible: false },
+      ] as readonly Paint[],
+    } as unknown as ComponentNode;
+
+    expect((component.fills as readonly Paint[]).length).toBe(5);
+
+    const result = cleanupVariantFills(component);
+
+    expect(result).toBe(true);
+    expect((component.fills as readonly Paint[]).length).toBe(0);
+  });
+
+  it('should handle component with empty fills array', () => {
+    const component = {
+      type: 'COMPONENT',
+      name: 'Style=Rounded, Weight=400, Fill=Off, Grade=Normal, Optical size=24dp',
+      fills: [] as readonly Paint[],
+    } as ComponentNode;
+
+    const result = cleanupVariantFills(component);
+
+    expect(result).toBe(false);
+  });
+
+  it('should only affect fills, not other component properties', () => {
+    const component = {
+      type: 'COMPONENT',
+      name: 'Style=Rounded, Weight=400, Fill=Off, Grade=Normal, Optical size=24dp',
+      variantProperties: { fill: 'Off', weight: '400' }, // These should remain
+      fills: [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, visible: false }] as readonly Paint[], // These should be removed
+      strokes: [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, visible: true }], // These should remain
+    } as unknown as ComponentNode;
+
+    cleanupVariantFills(component);
+
+    expect(component.variantProperties).toEqual({ fill: 'Off', weight: '400' });
+    expect((component.fills as readonly Paint[]).length).toBe(0);
+    expect(component.strokes?.length).toBe(1); // Strokes should be unchanged
   });
 });
