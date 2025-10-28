@@ -13,10 +13,10 @@
         "esbenp.prettier-vscode",
         "figma.figma-vscode-extension",
         "ms-vscode.vscode-typescript-next",
-        "vitest.explorer"
+        "vitest.explorer",
+        "Anthropic.claude-code"
       ],
       "settings": {
-        "terminal.integrated.defaultProfile.linux": "zsh",
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
