@@ -206,38 +206,35 @@ jobs:
 
       - name: Create failure issue
         if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'false'
-        uses: actions/create-issue@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: '❌ Icon Update Failed for commit ${{ steps.update.outputs.short_sha }}'
-          body: |
-            ## Icon Update Failed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "❌ Icon Update Failed for commit ${{ steps.update.outputs.short_sha }}" \
+            --label "bug,icon-update,automated" \
+            --body "## Icon Update Failed
 
-            An automated icon update was attempted but tests failed.
+          An automated icon update was attempted but tests failed.
 
-            ### Details
+          ### Details
 
-            - **Google Commit:** [`${{ steps.update.outputs.sha }}`](https://github.com/google/material-design-icons/commit/${{ steps.update.outputs.sha }})
-            - **Icon Count:** ${{ steps.update.outputs.count }}
-            - **Workflow Run:** [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - **Google Commit:** [\`${{ steps.update.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.update.outputs.sha }})
+          - **Icon Count:** ${{ steps.update.outputs.count }}
+          - **Workflow Run:** [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-            ### Action Required
+          ### Action Required
 
-            Manual intervention is needed to investigate the test failures.
+          Manual intervention is needed to investigate the test failures.
 
-            1. Review the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            2. Check what tests failed and why
-            3. Fix any issues in the codebase
-            4. Manually run: `pnpm icons:update --ref=${{ steps.update.outputs.sha }}`
-            5. Create a PR with fixes
+          1. Review the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          2. Check what tests failed and why
+          3. Fix any issues in the codebase
+          4. Manually run: \`pnpm icons:update --ref=${{ steps.update.outputs.sha }}\`
+          5. Create a PR with fixes
 
-            ---
+          ---
 
-            🤖 This issue was automatically created by the icon-update workflow.
-          labels: |
-            bug
-            icon-update
-            automated
+          🤖 This issue was automatically created by the icon-update workflow."
 
       - name: Notify success via Pushover
         if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
