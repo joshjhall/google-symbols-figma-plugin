@@ -14,16 +14,22 @@ The default `GITHUB_TOKEN` provided by GitHub Actions has limitations and cannot
 
 #### Setup Instructions
 
-1. **Create a Personal Access Token (Classic)**
-   - Go to https://github.com/settings/tokens
-   - Click **"Generate new token (classic)"**
-   - Name: `Icon Update Workflow` (or similar)
-   - Expiration: Set according to your preference (90 days recommended)
-   - Select scopes:
-     - ✅ `repo` (Full control of private repositories)
-     - ✅ `workflow` (Update GitHub Action workflows) - _optional_
+**Option 1: Fine-Grained PAT (Recommended - More Secure)**
+
+1. **Create a Fine-Grained Personal Access Token**
+   - Go to https://github.com/settings/tokens?type=beta
+   - Click **"Generate new token"**
+   - Token name: `Icon Update Workflow` (or similar)
+   - Expiration: 90 days (or your preference)
+   - Repository access: **Only select repositories** → Choose this repository
+   - Permissions (Repository permissions):
+     - ✅ **Contents**: Read and write
+     - ✅ **Pull requests**: Read and write
+     - ✅ **Metadata**: Read (automatically included)
+     - ✅ **Workflows**: Read and write _(optional - only if you want PRs to trigger other workflows)_
 
 2. **Copy the token**
+   - Click **"Generate token"**
    - Save it immediately - you won't see it again!
 
 3. **Add to Repository Secrets**
@@ -34,9 +40,24 @@ The default `GITHUB_TOKEN` provided by GitHub Actions has limitations and cannot
    - Value: Paste your token
    - Click **"Add secret"**
 
-4. **Token Maintenance**
-   - Remember to renew before expiration
-   - You can rotate tokens at any time by generating a new one and updating the secret
+**Option 2: Classic PAT (Simpler, Less Secure)**
+
+1. **Create a Personal Access Token (Classic)**
+   - Go to https://github.com/settings/tokens
+   - Click **"Generate new token (classic)"**
+   - Name: `Icon Update Workflow` (or similar)
+   - Expiration: Set according to your preference (90 days recommended)
+   - Select scopes:
+     - ✅ `repo` (Full control of private repositories)
+     - ✅ `workflow` (Update GitHub Action workflows) - _optional_
+
+2. **Follow steps 2-3 from Option 1 above**
+
+**Token Maintenance**
+
+- Remember to renew before expiration
+- You can rotate tokens at any time by generating a new one and updating the secret
+- Fine-grained tokens can be monitored in your token settings to see usage
 
 ---
 
