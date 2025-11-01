@@ -50,39 +50,57 @@ jobs:
           echo "count=$CURRENT_COUNT" >> $GITHUB_OUTPUT
           echo "📊 Current: $CURRENT_COUNT icons from commit ${CURRENT_SHA:0:7}"
 
+      - name: Check Google's latest commit SHA
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REF="${{ github.event.inputs.ref || 'master' }}"
+          echo "🔍 Checking latest commit SHA from Google's material-design-icons/$REF..."
+
+          # Fetch latest commit SHA from GitHub API (lightweight, no download)
+          LATEST_SHA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/google/material-design-icons/commits/$REF" \
+            | jq -r '.sha')
+
+          echo "sha=$LATEST_SHA" >> $GITHUB_OUTPUT
+          echo "short_sha=${LATEST_SHA:0:7}" >> $GITHUB_OUTPUT
+
+          # Compare with current SHA
+          if [ "$LATEST_SHA" = "${{ steps.current.outputs.sha }}" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "✅ No changes - already using latest commit ${LATEST_SHA:0:7}"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "🎉 Update available!"
+            echo "  Current: ${{ steps.current.outputs.sha }}"
+            echo "  Latest:  ${LATEST_SHA:0:7}"
+          fi
+
       - name: Fetch latest icon list from Google
+        if: steps.check.outputs.changed == 'true'
         id: update
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           REF="${{ github.event.inputs.ref || 'master' }}"
-          echo "🔍 Checking for updates from Google's material-design-icons/$REF..."
+          echo "📥 Downloading icon list from Google's material-design-icons/$REF..."
 
           # Run icon update script
           pnpm icons:update --ref="$REF"
 
-          # Check if anything changed
-          if git diff --quiet src/lib/icons/; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "✅ No changes detected - icons are up to date"
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
+          # Get new metadata
+          NEW_SHA=$(jq -r '.commitSha' src/lib/icons/icon-list-metadata.json)
+          NEW_COUNT=$(jq -r '.iconCount' src/lib/icons/icon-list-metadata.json)
 
-            # Get new metadata
-            NEW_SHA=$(jq -r '.commitSha' src/lib/icons/icon-list-metadata.json)
-            NEW_COUNT=$(jq -r '.iconCount' src/lib/icons/icon-list-metadata.json)
+          echo "sha=$NEW_SHA" >> $GITHUB_OUTPUT
+          echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
+          echo "short_sha=${NEW_SHA:0:7}" >> $GITHUB_OUTPUT
 
-            echo "sha=$NEW_SHA" >> $GITHUB_OUTPUT
-            echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
-            echo "short_sha=${NEW_SHA:0:7}" >> $GITHUB_OUTPUT
-
-            echo "🎉 Changes detected!"
-            echo "  Old: ${{ steps.current.outputs.count }} icons @ ${{ steps.current.outputs.sha }}"
-            echo "  New: $NEW_COUNT icons @ ${NEW_SHA:0:7}"
-          fi
+          echo "✅ Downloaded: $NEW_COUNT icons from commit ${NEW_SHA:0:7}"
 
       - name: Generate icon comparison delta
-        if: steps.update.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true'
         run: |
           echo "📊 Generating comparison delta..."
           pnpm icons:compare
@@ -98,26 +116,26 @@ jobs:
           fi
 
       - name: Run type checking
-        if: steps.update.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true'
         run: |
           echo "🔍 Type checking..."
           pnpm typecheck
 
       - name: Run tests
-        if: steps.update.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true'
         id: test
         run: |
           echo "🧪 Running tests..."
           pnpm test:run && echo "passed=true" >> $GITHUB_OUTPUT || echo "passed=false" >> $GITHUB_OUTPUT
 
       - name: Build plugin
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        if: steps.check.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
         run: |
           echo "🏗️  Building plugin..."
           pnpm build
 
       - name: Generate PR body
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        if: steps.check.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
         id: pr_body
         run: |
           # Read change counts
@@ -148,8 +166,8 @@ jobs:
           ### 📍 Source Information
 
           - **Previous Commit:** [\`${{ steps.current.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.current.outputs.sha }})
-          - **New Commit:** [\`${{ steps.update.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.update.outputs.sha }})
-          - **Compare:** [View changes](https://github.com/google/material-design-icons/compare/${{ steps.current.outputs.sha }}...${{ steps.update.outputs.sha }})
+          - **New Commit:** [\`${{ steps.check.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.check.outputs.sha }})
+          - **Compare:** [View changes](https://github.com/google/material-design-icons/compare/${{ steps.current.outputs.sha }}...${{ steps.check.outputs.sha }})
 
           ### ✅ Validation Status
 
@@ -189,15 +207,15 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        if: steps.check.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
         uses: peter-evans/create-pull-request@v6
         id: cpr
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore(icons): update to Google commit ${{ steps.update.outputs.short_sha }}'
-          branch: icon-update-${{ steps.update.outputs.short_sha }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(icons): update to Google commit ${{ steps.check.outputs.short_sha }}'
+          branch: icon-update-${{ steps.check.outputs.short_sha }}
           delete-branch: true
-          title: '🎨 Update Material Icons to ${{ steps.update.outputs.short_sha }}'
+          title: '🎨 Update Material Icons to ${{ steps.check.outputs.short_sha }}'
           body: ${{ steps.pr_body.outputs.body }}
           labels: |
             icon-update
@@ -205,12 +223,12 @@ jobs:
           assignees: ${{ github.repository_owner }}
 
       - name: Create failure issue
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'false'
+        if: steps.check.outputs.changed == 'true' && steps.test.outputs.passed == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh issue create \
-            --title "❌ Icon Update Failed for commit ${{ steps.update.outputs.short_sha }}" \
+            --title "❌ Icon Update Failed for commit ${{ steps.check.outputs.short_sha }}" \
             --label "bug,icon-update,automated" \
             --body "## Icon Update Failed
 
@@ -218,7 +236,7 @@ jobs:
 
           ### Details
 
-          - **Google Commit:** [\`${{ steps.update.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.update.outputs.sha }})
+          - **Google Commit:** [\`${{ steps.check.outputs.sha }}\`](https://github.com/google/material-design-icons/commit/${{ steps.check.outputs.sha }})
           - **Icon Count:** ${{ steps.update.outputs.count }}
           - **Workflow Run:** [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
@@ -229,7 +247,7 @@ jobs:
           1. Review the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           2. Check what tests failed and why
           3. Fix any issues in the codebase
-          4. Manually run: \`pnpm icons:update --ref=${{ steps.update.outputs.sha }}\`
+          4. Manually run: \`pnpm icons:update --ref=${{ steps.check.outputs.sha }}\`
           5. Create a PR with fixes
 
           ---
@@ -237,7 +255,7 @@ jobs:
           🤖 This issue was automatically created by the icon-update workflow."
 
       - name: Notify success via Pushover
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
+        if: steps.check.outputs.changed == 'true' && steps.test.outputs.passed == 'true'
         env:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
@@ -247,7 +265,7 @@ jobs:
               --form-string "token=$PUSHOVER_TOKEN" \
               --form-string "user=$PUSHOVER_USER" \
               --form-string "title=Icon Update Available" \
-              --form-string "message=✅ New Material Icons update ready for review (commit ${{ steps.update.outputs.short_sha }})" \
+              --form-string "message=✅ New Material Icons update ready for review (commit ${{ steps.check.outputs.short_sha }})" \
               --form-string "priority=0" \
               --form-string "url=${{ steps.cpr.outputs.pull-request-url }}" \
               --form-string "url_title=View PR" \
@@ -257,7 +275,7 @@ jobs:
           fi
 
       - name: Notify failure via Pushover
-        if: steps.update.outputs.changed == 'true' && steps.test.outputs.passed == 'false'
+        if: steps.check.outputs.changed == 'true' && steps.test.outputs.passed == 'false'
         env:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
@@ -267,7 +285,7 @@ jobs:
               --form-string "token=$PUSHOVER_TOKEN" \
               --form-string "user=$PUSHOVER_USER" \
               --form-string "title=Icon Update Failed" \
-              --form-string "message=❌ Icon update for commit ${{ steps.update.outputs.short_sha }} failed tests" \
+              --form-string "message=❌ Icon update for commit ${{ steps.check.outputs.short_sha }} failed tests" \
               --form-string "priority=1" \
               --form-string "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
               --form-string "url_title=View Logs" \
@@ -282,11 +300,11 @@ jobs:
           echo "## 🎨 Icon Update Check Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ steps.update.outputs.changed }}" == "true" ]; then
+          if [ "${{ steps.check.outputs.changed }}" == "true" ]; then
             echo "### ✅ Changes Detected" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "- **From:** ${{ steps.current.outputs.count }} icons @ \`${{ steps.current.outputs.sha }}\`" >> $GITHUB_STEP_SUMMARY
-            echo "- **To:** ${{ steps.update.outputs.count }} icons @ \`${{ steps.update.outputs.sha }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **To:** ${{ steps.update.outputs.count }} icons @ \`${{ steps.check.outputs.sha }}\`" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
 
             if [ "${{ steps.test.outputs.passed }}" == "true" ]; then

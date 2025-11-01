@@ -2,13 +2,47 @@
 
 This document explains what secrets need to be configured for automated workflows.
 
-## Required Secrets: None
+## Required Secrets
 
-The workflows will run fine without any secrets! But you can **optionally** add Pushover for mobile notifications.
+### PAT_TOKEN (Required for Icon Updates)
+
+A Personal Access Token (PAT) is required for the automated icon update workflow to create pull requests.
+
+#### Why PAT instead of GITHUB_TOKEN?
+
+The default `GITHUB_TOKEN` provided by GitHub Actions has limitations and cannot create pull requests by default. Using a PAT provides more control and consistent behavior.
+
+#### Setup Instructions
+
+1. **Create a Personal Access Token (Classic)**
+   - Go to https://github.com/settings/tokens
+   - Click **"Generate new token (classic)"**
+   - Name: `Icon Update Workflow` (or similar)
+   - Expiration: Set according to your preference (90 days recommended)
+   - Select scopes:
+     - ✅ `repo` (Full control of private repositories)
+     - ✅ `workflow` (Update GitHub Action workflows) - _optional_
+
+2. **Copy the token**
+   - Save it immediately - you won't see it again!
+
+3. **Add to Repository Secrets**
+   - Go to your repository on GitHub
+   - Navigate to: **Settings → Secrets and variables → Actions**
+   - Click **"New repository secret"**
+   - Name: `PAT_TOKEN`
+   - Value: Paste your token
+   - Click **"Add secret"**
+
+4. **Token Maintenance**
+   - Remember to renew before expiration
+   - You can rotate tokens at any time by generating a new one and updating the secret
 
 ---
 
-## Optional: Pushover Mobile Notifications
+## Optional Secrets
+
+### Pushover Mobile Notifications
 
 Get notified on your phone when icon updates are available or when they fail.
 
