@@ -360,7 +360,7 @@ async function generateCategories() {
       });
     });
 
-    fs.writeFileSync(categoryMappingPath, JSON.stringify(categoryMapping, null, 2));
+    fs.writeFileSync(categoryMappingPath, JSON.stringify(categoryMapping, null, 2) + '\n');
     fs.writeFileSync(
       categoriesSummaryPath,
       JSON.stringify(
@@ -375,7 +375,7 @@ async function generateCategories() {
         })),
         null,
         2
-      )
+      ) + '\n'
     );
 
     console.log('\n✅ Category mapping saved to category-mapping.json');

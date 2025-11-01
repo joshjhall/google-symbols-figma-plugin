@@ -16,6 +16,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 interface IconChangeDelta {
   oldCommit: string;
@@ -62,7 +66,7 @@ async function getCommitFromGitHistory(): Promise<string | null> {
 }
 
 async function getCurrentCommit(): Promise<string> {
-  const metadataPath = path.join(__dirname, '..', 'icon-list-metadata.json');
+  const metadataPath = path.join(__dirname, '..', 'src', 'lib', 'icons', 'icon-list-metadata.json');
   const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
   return metadata.commitSha;
 }
