@@ -696,7 +696,9 @@ export function diagnoseComponentSetProperties(componentSet: ComponentSetNode): 
   if ('variantGroupProperties' in componentSet) {
     logger.info(`📦 ComponentSet.variantGroupProperties:`);
     try {
-      const vgp = (componentSet as any).variantGroupProperties;
+      const vgp = (
+        componentSet as ComponentSetNode & { variantGroupProperties?: Record<string, unknown> }
+      ).variantGroupProperties;
       if (vgp) {
         Object.keys(vgp).forEach((key) => {
           logger.info(`   ${key}: ${JSON.stringify(vgp[key])}`);

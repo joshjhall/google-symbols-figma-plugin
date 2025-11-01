@@ -189,7 +189,11 @@ function findCommitPath(
   const visited = new Set<string>([fromCommit]);
 
   while (queue.length > 0) {
-    const { commit, path } = queue.shift()!;
+    const current = queue.shift();
+    if (!current) {
+      break;
+    }
+    const { commit, path } = current;
 
     if (commit === toCommit) {
       return path;

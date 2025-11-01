@@ -118,7 +118,7 @@ describe('cleanupVariantFillsInComponentSet', () => {
   it('should skip non-component children', () => {
     const components = [
       createMockComponent('Variant 1', true),
-      { type: 'FRAME', name: 'Not a component' } as any,
+      { type: 'FRAME', name: 'Not a component' } as unknown as ComponentNode,
       createMockComponent('Variant 2', true),
     ];
     const componentSet = createMockComponentSet('home', components as ComponentNode[]);

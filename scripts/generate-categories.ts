@@ -87,7 +87,10 @@ async function generateCategories() {
           if (!categoryIconMap.has(category)) {
             categoryIconMap.set(category, []);
           }
-          categoryIconMap.get(category)!.push(icon);
+          const categoryIcons = categoryIconMap.get(category);
+          if (categoryIcons) {
+            categoryIcons.push(icon);
+          }
         }
       }
 
@@ -112,7 +115,10 @@ async function generateCategories() {
 
         // Build category metadata with boundaries
         const categoryMetadata = categoryNames.map((name) => {
-          const icons = categoryIconMap.get(name)!;
+          const icons = categoryIconMap.get(name);
+          if (!icons || icons.length === 0) {
+            throw new Error(`Category ${name} has no icons`);
+          }
           return {
             name,
             icons,
@@ -177,7 +183,10 @@ async function generateCategories() {
 
       // Build final categories array maintaining sort order
       for (const categoryName of categoryNames) {
-        const icons = categoryIconMap.get(categoryName)!;
+        const icons = categoryIconMap.get(categoryName);
+        if (!icons || icons.length === 0) {
+          throw new Error(`Category ${categoryName} has no icons`);
+        }
         const firstIcon = icons[0];
         const lastIconInCategory = icons[icons.length - 1];
 
